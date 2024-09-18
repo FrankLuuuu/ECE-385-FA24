@@ -3,7 +3,7 @@ module fa (input logic a, b, c
 
 	always_comb begin	//procedure block for combinational logic
 			s = a ^ b ^ c;	//note: blocking assignment (=)
-			c_out = (a & b) | (b | c) | (a & c);
+			c_out = (a & b) | (b & c) | (a & c);
 	end
 
 endmodule
