@@ -1,3 +1,13 @@
+module fa (input logic a, b, c
+			output logic s, c_out);
+
+	always_comb begin	//procedure block for combinational logic
+			s = a ^ b ^ c;	//note: blocking assignment (=)
+			c_out = (a & b) | (b & c) | (a & c);
+	end
+
+endmodule
+
 module select_adder (
 	input  logic  [15:0] a, 
     input  logic  [15:0] b,
