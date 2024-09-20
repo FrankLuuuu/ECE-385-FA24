@@ -1,4 +1,4 @@
-module fa (input logic a, b, c
+module fa (input logic a, b, c,
 			output logic s, c_out);
 
 	always_comb begin	//procedure block for combinational logic
@@ -15,10 +15,10 @@ module ripple_adder_4 (input logic [3:0] a, b,
 
 	logic c1, c2, c3; 	//the "wire" that connects in between the adders
 
-	fa fa0 (.a(a[0]), .b(b[0]), .c(c_in), .s(s[0]), c_out(c1));
-	fa fa1 (.a(a[1]), .b(b[1]), .c(c1), .s(s[1]), c_out(c2));
-	fa fa2 (.a(a[2]), .b(b[2]), .c(c2), .s(s[2]), c_out(c3));
-	fa fa3 (.a(a[3]), .b(b[3]), .c(c3), .s(s[3]), c_out(c_out));
+	fa fa0 (.a(a[0]), .b(b[0]), .c(c_in), .s(s[0]), .c_out(c1));
+	fa fa1 (.a(a[1]), .b(b[1]), .c(c1), .s(s[1]), .c_out(c2));
+	fa fa2 (.a(a[2]), .b(b[2]), .c(c2), .s(s[2]), .c_out(c3));
+	fa fa3 (.a(a[3]), .b(b[3]), .c(c3), .s(s[3]), .c_out(c_out));
 
 endmodule
 
