@@ -1,3 +1,4 @@
+// done
 //Debouncer circuit inspired by https://forum.digikey.com/t/debounce-logic-circuit-vhdl/12573
 //Also serves as a synchronizer for pushbutton and switch (asynchronous) inputs
 //Notice that this circuit behaves differently under simulation as it does when synthesized
