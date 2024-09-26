@@ -9,40 +9,44 @@ module fa (input logic a, b, c,
 
 endmodule
 
-module ripple_adder_4 (input logic [3:0] a, b, 
-						input logic c_in,
-						output logic [3:0] s,
-						output logic c_out);
+module adder(input logic [7:0] a, s,
+				input logic subtract,
+				output logic [7:0] s_out,
+				output logic x);
+    
+    logic [8:0] a_shift, s_multiplicands, s_complement;
+    
+    logic c1, c2, c3, c4, c5, c6, c7, c8;
+    logic overflow, c_complement;
+    
+    always_comb
+    begin
+		a_shift[8] = a[7]; // sign extended to 9 bits
+		s_multiplicands[8] = s[7]; // sign extended to 9 bits
+		a_shift[7:0] = a;
+		s_multiplicands[7:0] = s;
 
-	logic c1, c2, c3; 	//the "wire" that connects in between the adders
+        if (subtract == 0) // addition
+        begin
+            s_complement = s_multiplicands; // directly copy
+            c_complement = 0;
+        end
+        else // subtraction
+        begin
+            s_complement[8] = s_multiplicands[8]; // sign bit remains
+            s_complement[7:0] = ~s_multiplicands[7:0]; // invert
+            c_complement = 1; // plus 1
+        end
+    end
 
-	fa fa0 (.a(a[0]), .b(b[0]), .c(c_in), .s(s[0]), .c_out(c1));
-	fa fa1 (.a(a[1]), .b(b[1]), .c(c1), .s(s[1]), .c_out(c2));
-	fa fa2 (.a(a[2]), .b(b[2]), .c(c2), .s(s[2]), .c_out(c3));
-	fa fa3 (.a(a[3]), .b(b[3]), .c(c3), .s(s[3]), .c_out(c_out));
-
-endmodule
-
-module ripple_adder (
-	input  logic  [15:0] a, 
-    input  logic  [15:0] b,
-	input  logic         cin,
-	
-	output logic  [15:0] s,
-	output logic         cout
-);
-
-	/* TODO
-		*
-		* Insert code here to implement a ripple adder.
-		* Your code should be completly combinational (don't use always_ff or always_latch).
-		* Feel free to create sub-modules or other files. */
-
-	logic c4, c8, c12; //the "wire" that connects in between the adders
-
-	ripple_adder_4 ra4_0 (  .a(a[3:0]),   .b(b[3:0]), .c_in(cin),   .s(s[3:0]),   .c_out(c4));
-	ripple_adder_4 ra4_1 (  .a(a[7:4]),   .b(b[7:4]),  .c_in(c4),   .s(s[7:4]),   .c_out(c8));
-	ripple_adder_4 ra4_2 ( .a(a[11:8]),  .b(b[11:8]),  .c_in(c8),  .s(s[11:8]),  .c_out(c12));
-	ripple_adder_4 ra4_3 (.a(a[15:12]), .b(b[15:12]), .c_in(c12), .s(s[15:12]), .c_out(cout));
+	fa fa0 (.a(a_shift[0]), .b(s_complement[0]), .c(c_complement), .s(s_out[0]), .c_out(c1));
+    fa fa1 (.a(a_shift[1]), .b(s_complement[1]), .c(c1), .s(s_out[1]), .c_out(c2));
+    fa fa2 (.a(a_shift[2]), .b(s_complement[2]), .c(c2), .s(s_out[2]), .c_out(c3));
+    fa fa3 (.a(a_shift[3]), .b(s_complement[3]), .c(c3), .s(s_out[3]), .c_out(c4));
+    fa fa4 (.a(a_shift[4]), .b(s_complement[4]), .c(c4), .s(s_out[4]), .c_out(c5));
+    fa fa5 (.a(a_shift[5]), .b(s_complement[5]), .c(c5), .s(s_out[5]), .c_out(c6));
+    fa fa6 (.a(a_shift[6]), .b(s_complement[6]), .c(c6), .s(s_out[6]), .c_out(c7));
+    fa fa7 (.a(a_shift[7]), .b(s_complement[7]), .c(c7), .s(s_out[7]), .c_out(c8));
+    fa fa8 (.a(a_shift[8]), .b(s_complement[8]), .c(c8), .s(overflow), .c_out(x));
 
 endmodule

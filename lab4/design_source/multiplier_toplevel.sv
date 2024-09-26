@@ -1,4 +1,4 @@
-// change
+// change, multiplier_toplevel() module done
 //Top level for ECE 385 adders lab
 //modified for Spring 2024
 
@@ -6,17 +6,15 @@
 //Upper 4 HEX digits will reflect value in the accumulator
 
 
-module adder_toplevel   (
+module multiplier_toplevel   (
 	input  logic 		clk, 
 	input  logic		reset, 
 	input  logic 		run_i, // _i stands for input
-	input  logic [15:0] sw_i,
+	input  logic [7:0] 	sw_i,
 
 	output logic 		sign_led,
-	output logic [7:0]  hex_seg_a,
-	output logic [3:0]  hex_grid_a,
-	output logic [7:0]  hex_seg_b,
-	output logic [3:0]  hex_grid_b
+	output logic [7:0]  hex_seg,
+	output logic [3:0]  hex_grid,
 );
 
 	// Declare temporary values used by other modules
