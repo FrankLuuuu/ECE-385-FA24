@@ -17,7 +17,7 @@ module adder(input logic [7:0] a, s,
     logic [8:0] a_shift, s_multiplicands, s_complement;
     
     logic c1, c2, c3, c4, c5, c6, c7, c8;
-    logic overflow, c_complement;
+    logic overflow;
     
     always_comb
     begin
@@ -28,18 +28,16 @@ module adder(input logic [7:0] a, s,
 
         if (subtract == 0) // addition
         begin
-            s_complement = s_multiplicands; // directly copy
-            c_complement = 0;
+            s_complement = s_multiplicands; // direct copy
         end
         else // subtraction
         begin
             s_complement[8] = s_multiplicands[8]; // sign bit remains
             s_complement[7:0] = ~s_multiplicands[7:0]; // invert
-            c_complement = 1; // plus 1
         end
     end
 
-	fa fa0 (.a(a_shift[0]), .b(s_complement[0]), .c(c_complement), .s(s_out[0]), .c_out(c1));
+	fa fa0 (.a(a_shift[0]), .b(s_complement[0]), .c(subtract), .s(s_out[0]), .c_out(c1));
     fa fa1 (.a(a_shift[1]), .b(s_complement[1]), .c(c1), .s(s_out[1]), .c_out(c2));
     fa fa2 (.a(a_shift[2]), .b(s_complement[2]), .c(c2), .s(s_out[2]), .c_out(c3));
     fa fa3 (.a(a_shift[3]), .b(s_complement[3]), .c(c3), .s(s_out[3]), .c_out(c4));
