@@ -1,4 +1,4 @@
-// change
+// done
 module fa (input logic a, b, c,
 			output logic s, c_out);
 

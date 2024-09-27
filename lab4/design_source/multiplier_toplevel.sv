@@ -12,9 +12,10 @@ module multiplier_toplevel   (
 	input  logic 		run_i, // _i stands for input
 	input  logic [7:0] 	sw_i,
 
-	output logic 		sign_led,
 	output logic [7:0]  hex_seg,
 	output logic [3:0]  hex_grid,
+	output logic [7:0]  Aval, Bval,
+	output logic 		Xval
 );
 
 	// Declare temporary values used by other modules

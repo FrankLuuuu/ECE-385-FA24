@@ -4,30 +4,40 @@
 module control (
 	input  logic Clk, 
 	input  logic Reset,
-	input  logic LoadA,
-	input  logic LoadB,
-	input  logic Execute,
+	input  logic Run,
+	input  logic M,
+	input  logic M,
 
-	output logic Shift_En, 
-	output logic Ld_A,
-	output logic Ld_B
+	output logic Clear_Load,
+	output logic Shift,
+	output logic Add,
+	output logic Sub
 );
 
 // Declare signals curr_state, next_state of type enum
 // with enum values of s_start, s_count0, ..., s_done as the state values
 // Note that the length implies a max of 8 states, so you will need to bump this up for 8-bits
-	enum logic [3:0] {
-		s_start, 
-		s_count0, 
-		s_count1, 
-		s_count2, 
-		s_count3, 
-		s_count4, 
-		s_count5, 
-		s_count6, 
-		s_count7, 
-		s_done
+	enum logic [4:0] {
+		s_start, s_add0, s_add1, s_add2, 
+		s_add3, s_add4, s_add5, s_add6, 
+		s_add7, s_shift0, s_shift1, 
+		s_shift2, s_shift3, s_shift4, 
+		s_shift5, s_shift6, s_shift7, 
+		s_shift8, s_clear, s_done
 	} curr_state, next_state; 
+
+	//updates flip flop, current state is the only one
+	always_ff @(posedge Clk)  
+	begin
+		if (Reset)
+		begin
+			curr_state <= s_start;
+		end
+		else 
+		begin
+			curr_state <= next_state;
+		end
+	end
 
 	always_comb
 	begin
@@ -91,19 +101,5 @@ module control (
 		endcase
 	end
 
-
-
-	//updates flip flop, current state is the only one
-	always_ff @(posedge Clk)  
-	begin
-		if (Reset)
-		begin
-			curr_state <= s_start;
-		end
-		else 
-		begin
-			curr_state <= next_state;
-		end
-	end
 
 endmodule
