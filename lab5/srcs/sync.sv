@@ -1,3 +1,4 @@
+// no change
 
 `ifdef SYNTHESIS // Use big counter for synthesis
 localparam COUNTER_WIDTH = 15; 
