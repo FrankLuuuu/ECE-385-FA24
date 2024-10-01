@@ -8,110 +8,126 @@
 
 module multiplier_toplevel   (
 	input  logic 		clk, 
-	input  logic		reset, 
-	input  logic 		run_i, // _i stands for input
-	input  logic [7:0] 	sw_i,
+	input  logic		rab, 		//reset, clear A, load B
+	input  logic 		run, 		//equivalent of execute
+	input  logic [7:0] 	sw_input,
 
 	output logic [7:0]  hex_seg,
 	output logic [3:0]  hex_grid,
-	output logic [7:0]  Aval, Bval,
-	output logic 		Xval
+	output logic [7:0] 	A,
+	output logic [7:0] 	B,
+	output logic 		X
 );
 
-	// Declare temporary values used by other modules
-	logic load;
-	//Out;
-	logic [16:0] s;
-	logic [16:0] out;
-	
-	// Synchronized inputs (denoted by _s in naming convention)
-	logic run_s;
-	logic reset_s;
-	logic [15:0] sw_s;
+
+// wires for in betweeen models
+// **REGISTER UNIT**
+	logic xa;			//shift x to a
+	logic ab;			//shift a to b
+	logic [7:0] reg_a_dout;
+	logic [7:0] reg_b_dout;
+// **CONTROL UNIT**
+	logic RAB_s;			//wire from rab button to control unit
+	logic run_s;			//wire from run button to control unit
+
+// **RIPPLE ADDER UNIT**
+	logic [7:0] sw_input_s;
+	logic [7:0] adder_out;
+
+	logic add_wire;
+	logic sub_wire;
+	logic clear_wire;
+	logic shift_wire;
+
+	logic bout;
+
+	always_comb begin	
+		A = reg_a_dout;
+		B = reg_b_dout;	
+		X = xa;
+	end
     
 	// Allows the register to load once, and not during full duration of button press
 	// ie. converts an active low button press to a single clock cycle active high event
-	negedge_detector run_once ( 
-		.clk	(clk), 
-		.in	    (run_s), 
-		.out    (load)
-	);
-
+	
 	// Register unit that holds the accumulated sum
-	load_reg #(
-	   .DATA_WIDTH(17) // specifying the data width of register through a parameter
-	) reg_unit ( 
-		.clk		(clk), 
-		.reset		(reset_s), 
-		.load		(load), 
-		.data_i		(s), 
+
+	// done
+	reg_8 reg_a (
+		.Clk		(clk),
+		.Reset		(clear_wire | RAB_s),
+		.Shift_In	(xa),
+		.Load		(add_wire | sub_wire),
+		.Shift 		(shift_wire),
+		.D 			(adder_out),
 		
-		.data_q   	(out)
+		.Shift_Out	(ab),
+		.Data_Out	(reg_a_dout)
 	);
 
-	// Addition unit
-	ripple_adder adder_ra (
-		.a	 	(sw_s), 
-		.b	 	(out[15:0]), 
-		.cin 	(1'b0), 
-		.cout	(s[16]), 
-		.s   	(s[15:0]) 
+	// done
+	reg_8 reg_b (
+		.Clk		(clk),
+		.Reset		(1'b0),
+		.Shift_In	(ab),
+		.Load		(RAB_s),
+		.Shift 		(shift_wire),
+		.D 			(sw_input_s),
+		
+		.Shift_Out	(bout),
+		.Data_Out	(reg_b_dout)
+	);	
+
+	// done
+	adder shift_adder (
+		.a 			(reg_a_dout),
+		.s 			(sw_input_s),
+		.subtract 	(sub_wire),
+
+		.s_out		(adder_out),
+		.x 			(xa)
 	);
-	
-	// lookahead_adder adder_la (		
-    //	.a	 	(sw_s), 
-    //	.b	 	(out[15:0]), 
-    //	.cin 	(1'b0), 
-    //	.cout	(s[16]), 
-    //	.s   	(s[15:0]) 
-	// );
-	
-	// select_adder adder_sa (	
-	// 	.a	 	(sw_s), 
-	// 	.b	 	(out[15:0]), 
-	// 	.cin 	(1'b0), 
-	// 	.cout	(s[16]), 
-	// 	.s   	(s[15:0]) 
-	// );
 
+	// 
+	control control_unit (
+		.Clk		(clk),
+		.RAB		(RAB_s),
+		.Run		(run_s),
+		.M1			(reg_b_dout[0]),
+		.M 			(reg_b_dout[1]),
+		
+		.Clear_Load (clear_wire),
+		.Shift		(shift_wire),
+		.Add		(add_wire),
+		.Sub		(sub_wire)
+	);
 
+	// done
 	// Hex units that display contents of sw and sum register in hex
 	hex_driver hex_a (
 		.clk		(clk),
 		.reset		(reset_s),
-		.in			({sw_s[15:12], sw_s[11:8], sw_s[7:4], sw_s[3:0]}),
-		.hex_seg	(hex_seg_a),
-		.hex_grid	(hex_grid_a)
+		.in			({reg_a_dout[7:4], reg_a_dout[3:0], reg_b_dout[7:4], reg_b_dout[3:0]}),
+		
+		.hex_seg	(hex_seg),
+		.hex_grid	(hex_grid)
 	);
 	
-	hex_driver hex_b (
-		.clk		(clk),
-		.reset		(reset_s),
-		.in			({out[15:12], out[11:8], out[7:4], out[3:0]}),
-		.hex_seg	(hex_seg_b),
-		.hex_grid	(hex_grid_b)
-	);
-	
+	// done
 	// Synchchronizers/debouncers
 	sync_debounce button_sync [1:0] (
 	   .clk    (clk),
 	   
-	   .d      ({reset, run_i}),
-	   .q      ({reset_s, run_s})
+	   .d      ({rab, run}),
+	   .q      ({RAB_s, run_s})
 	);
-	
-		
-	load_reg #(
-	   .DATA_WIDTH(16) // specifying the data width of synchronizer through a parameter
-	) sw_sync ( 
-		.clk		(clk), 
-		.reset		(1'b0), // there is no reset for the inputs, so hardcode 0
-		.load		(1'b1), // always load data_i into the register
-		.data_i		(sw_i), 
-		
-		.data_q   	(sw_s) 
+
+	// done
+	sync_debounce switch_sync [7:0] (
+	   .clk    (clk),
+	   
+	   .d      (sw_input),
+	   .q      (sw_input_s)
 	);
-							
-	assign sign_led = out[16]; // the sign bit of the output
 		
 endmodule
