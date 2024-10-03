@@ -49,7 +49,7 @@ module control (
 	
 	//You should add additional control signals according to the SLC-3 datapath design
 	// output logic 		gate_alu,
-	output logic 		gate_marmux
+	output logic 		gate_marmux,
 
 	output logic		mem_mem_ena, // Mem Operation Enable
 	output logic		mem_wr_ena  // Mem Write Enable
@@ -94,7 +94,9 @@ module control (
 		pcmux = 2'b00;
 
 
-		mio_en = 1'b0;
+		mio_en = 1'b0;					
+		mem_mem_ena = 1'b0;
+
 		
 	
 		// Assign relevant control signals based on current state

@@ -47,7 +47,7 @@ logic           ld_led;
 logic           gate_pc;
 logic           gate_mdr;
 // logic           gate_alu; //change for 5.2 
-// logic           gate_mar; //change for 5.2 
+logic           gate_marmux;
 
 logic [1:0]     pcmux;
 
@@ -92,7 +92,7 @@ bus_mux busmux (
     .data_bus(bus)
 );
 
-pc_mux pcmux(
+pc_mux PCmux(
     .data_bus(bus),
     .gate_marmux(16'h0000), // change for 5.2
     .pc_plus_1(pc + 1),

@@ -28,31 +28,28 @@ processor_top test_lc3(.*);
 initial begin: TEST
     
     reset = 1;
-    repeat(150) @(posedge clk);
+    repeat(4) @(posedge clk);
     reset <= 0;
     
-    repeat(150) @(posedge clk);
-    sw_i = 16'h000b;
+//    repeat(5) @(posedge clk);
+//    sw_i = 16'h000b;
     
-    repeat(150) @(posedge clk);
+    repeat(5) @(posedge clk);
     run_i <= 1;
     
-    repeat(150) @(posedge clk);
+    repeat(5) @(posedge clk);
     run_i <= 0;
     
-    repeat(150) @(posedge clk);
-    // sw_i = 16'h1357;
-    
-    repeat(1000000) @(posedge clk);
+    repeat(10) @(posedge clk);
     continue_i <= 1;
     
-    repeat(1000000) @(posedge clk);
+    repeat(10) @(posedge clk);
     continue_i <= 0;
     
-    repeat(1000000) @(posedge clk);
+    repeat(10) @(posedge clk);
     continue_i <= 1;
     
-    repeat(1000000) @(posedge clk);
+    repeat(10) @(posedge clk);
     continue_i <= 0;
     
 end

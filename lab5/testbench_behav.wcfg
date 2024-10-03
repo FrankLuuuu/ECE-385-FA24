@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="testbench_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="SLC3_TYPES" />
+            <top_module name="\$unit_control_sv_1374203570 " />
+            <top_module name="glbl" />
+            <top_module name="testbench" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="105.801 ns"></ZoomEndTime>
+      <Cursor1Time time="64.200 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="296"></NameColumnWidth>
+      <ValueColumnWidth column_width="141"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="14" />
+   <wvobject fp_name="/testbench/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/reset" type="logic">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/run_i" type="logic">
+      <obj_property name="ElementShortName">run_i</obj_property>
+      <obj_property name="ObjectShortName">run_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/continue_i" type="logic">
+      <obj_property name="ElementShortName">continue_i</obj_property>
+      <obj_property name="ObjectShortName">continue_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/sw_i" type="array">
+      <obj_property name="ElementShortName">sw_i[15:0]</obj_property>
+      <obj_property name="ObjectShortName">sw_i[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/led_o" type="array">
+      <obj_property name="ElementShortName">led_o[15:0]</obj_property>
+      <obj_property name="ObjectShortName">led_o[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/hex_seg_left" type="array">
+      <obj_property name="ElementShortName">hex_seg_left[7:0]</obj_property>
+      <obj_property name="ObjectShortName">hex_seg_left[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/hex_grid_left" type="array">
+      <obj_property name="ElementShortName">hex_grid_left[3:0]</obj_property>
+      <obj_property name="ObjectShortName">hex_grid_left[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/hex_seg_right" type="array">
+      <obj_property name="ElementShortName">hex_seg_right[7:0]</obj_property>
+      <obj_property name="ObjectShortName">hex_seg_right[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/hex_grid_right" type="array">
+      <obj_property name="ElementShortName">hex_grid_right[3:0]</obj_property>
+      <obj_property name="ObjectShortName">hex_grid_right[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/test_lc3/slc3/cpu/pc" type="array">
+      <obj_property name="ElementShortName">pc[15:0]</obj_property>
+      <obj_property name="ObjectShortName">pc[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/test_lc3/slc3/cpu/mar" type="array">
+      <obj_property name="ElementShortName">mar[15:0]</obj_property>
+      <obj_property name="ObjectShortName">mar[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/test_lc3/slc3/cpu/mdr" type="array">
+      <obj_property name="ElementShortName">mdr[15:0]</obj_property>
+      <obj_property name="ObjectShortName">mdr[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testbench/test_lc3/slc3/cpu/ir" type="array">
+      <obj_property name="ElementShortName">ir[15:0]</obj_property>
+      <obj_property name="ObjectShortName">ir[15:0]</obj_property>
+   </wvobject>
+</wave_config>
