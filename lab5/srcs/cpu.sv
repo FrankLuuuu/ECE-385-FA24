@@ -38,23 +38,32 @@ module cpu (
 
 
 // Internal connections, follow the datapath block diagram and add the additional needed signals
-logic ld_mar; 
-logic ld_mdr; 
-logic ld_ir; 
-logic ld_pc; 
-logic ld_led;
+logic           ld_mar; 
+logic           ld_mdr; 
+logic           ld_ir; 
+logic           ld_pc; 
+logic           ld_led;
 
-logic gate_pc;
-logic gate_mdr;
+logic           gate_pc;
+logic           gate_mdr;
+// logic           gate_alu; //change for 5.2 
+// logic           gate_mar; //change for 5.2 
 
-logic [1:0] pcmux;
+logic [1:0]     pcmux;
 
-logic [15:0] mar; 
-logic [15:0] mdr;
-logic [15:0] ir;
-logic [15:0] pc;
-logic ben;
+logic [15:0]    mar; 
+logic [15:0]    mdr;
+logic [15:0]    ir;
+logic [15:0]    pc;
+logic           ben;
 
+
+logic           mio_en;
+
+logic [15:0]    bus;
+// logic [15:0]    alu; //change for 5.2 
+logic [15:0]    pcmux_out;
+logic [15:0]    mio_en_out;
 
 assign mem_addr = mar;
 assign mem_wdata = mdr;
@@ -65,18 +74,49 @@ assign mem_wdata = mdr;
 // but can also lead to confusing code if used too commonly
 control cpu_control (
     .*
-);
-
+); 
 
 assign led_o = ir;
 assign hex_display_debug = ir;
+
+bus_mux busmux (
+    .GateMAR(1'b0), //change for 5.2 
+    .GatePC(gate_pc),
+    .GateMDR(gate_mdr),
+    .GateALU(1'b0), //change for 5.2 
+    .ADDR(16'h0000), // change for 5.2
+    .PC(pc),
+    .MDR(mdr),
+    .ALU(16'h0000), //change for 5.2 
+        
+    .data_bus(bus)
+);
+
+pc_mux pcmux(
+    .data_bus(bus),
+    .gate_marmux(16'h0000), // change for 5.2
+    .pc_plus_1(pc + 1),
+    
+    .select(pcmux),
+
+    .pcmux_out(pcmux_out)
+);
+
+mio_en_mux miomux(
+    .data_bus(bus),
+    .rdata(mem_rdata),
+
+    .mio_en(mio_en),
+
+    .mio_en_mux_out(mio_en_out)
+);
 
 load_reg #(.DATA_WIDTH(16)) ir_reg (
     .clk    (clk),
     .reset  (reset),
 
     .load   (ld_ir),
-    .data_i (),
+    .data_i (bus),
 
     .data_q (ir)
 );
@@ -86,11 +126,29 @@ load_reg #(.DATA_WIDTH(16)) pc_reg (
     .reset(reset),
 
     .load(ld_pc),
-    .data_i(),
+    .data_i(pcmux_out),
 
     .data_q(pc)
 );
 
+load_reg #(.DATA_WIDTH(16)) mdr_reg (
+    .clk(clk),
+    .reset(reset),
 
+    .load(ld_mdr),
+    .data_i(mio_en_out),
+
+    .data_q(mdr)
+);
+
+load_reg #(.DATA_WIDTH(16)) mar_reg (
+    .clk(clk),
+    .reset(reset),
+
+    .load(ld_mar),
+    .data_i(bus),
+
+    .data_q(mar)
+);
 
 endmodule
