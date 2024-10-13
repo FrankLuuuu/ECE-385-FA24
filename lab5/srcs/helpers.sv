@@ -67,3 +67,29 @@ begin
         mio_en_mux_out = data_bus;         // enable = 1
 end
 endmodule
+
+
+
+module decoder(
+    input   logic [2:0] dr,
+
+    output  logic [7:0] load
+);
+
+always_comb
+begin
+    load[7:0] = 0; 
+
+    case(dr)
+        3'b000: load[0] = 1;
+        3'b001: load[1] = 1;
+        3'b010: load[2] = 1;
+        3'b011: load[3] = 1;
+        3'b100: load[4] = 1;
+        3'b101: load[5] = 1;
+        3'b110: load[6] = 1;
+        3'b111: load[7] = 1;
+    endcase
+end
+
+endmodule
