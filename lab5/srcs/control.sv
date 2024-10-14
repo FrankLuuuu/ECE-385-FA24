@@ -55,16 +55,47 @@ module control (
 	output logic		mem_wr_ena  // Mem Write Enable
 );
 
-
+	
 	enum logic [4:0] {
 		halted, 
 		pause_ir1,
 		pause_ir2, 
-		s_18, 
-		s_33_1,
+		s_18, 		//top steps that fetch
+		s_33_1,		//provided
 		s_33_2,
 		s_33_3,
-		s_35
+		s_35,
+
+		//new states
+		s_32,		//decode step
+
+		s_add,		//1 sr2
+		s_add_i,	//second add imm5
+		s_and,		//5 sr2
+		s_and_i, 	//second and imm5
+		s_not, 		//9
+
+		s_ldr_1,	//6
+		s_ldr_2,	//25
+		s_ldr_3,	//27
+
+		s_str_1,	//7
+		s_str_2,	//23
+		s_str_3,	//16
+
+		s_jsr_1,	//4
+		s_jsr_2,	//21
+
+		s_jmp,		//12
+
+		s_br_1,		//0
+		s_br_2,		//22
+
+		//scratch that theyre provided
+		// s_ps_1,		//continue pressed
+		// s_ps_2,		//continue released
+
+		//end of added sstates
 	} state, state_nxt;   // Internal state logic
 
 
@@ -149,14 +180,76 @@ module control (
 				state_nxt = pause_ir1;
 			// pause_ir1 and pause_ir2 are only for week 1 such that TAs can see 
 			// the values in ir.
+
+			//EDITED TO REMOVE INFERRED LATCH
 			pause_ir1 : 
 				if (continue_i) 
 					state_nxt = pause_ir2;
+				else
+					state_nxt = pause_ir1;
 			pause_ir2 : 
 				if (~continue_i)
 					state_nxt = s_18;
+				else
+					state_nxt = pause_ir2;
 			// you need to finish the rest of state transition logic.....
 			
+			//edited past this line:
+			s_32:		//decode step
+				state_nxt = s_18;		//fetchagain
+			//THIS IS WRONG IMPLEMENT DECODE HErE
+
+
+
+			s_add:		//1 sr2
+				state_nxt = s_18;		//fetchagain
+			s_add_i:	//second add imm5
+				state_nxt = s_18;		//fetchagain
+			s_and:		//5 sr2
+				state_nxt = s_18;		//fetchagain
+			s_and_i: 	//second and imm5
+				state_nxt = s_18;		//fetchagain
+			s_not: 		//9
+				state_nxt = s_18;		//fetchagain
+
+
+			//**might have to add extra states whiile waiting for r signal
+			//like, i think that instead of waiting for r we find the number of states we need to add instead
+			s_ldr_1:	//6
+				state_nxt = s_ldr_2;	//25
+			s_ldr_2:	//25
+				state_nxt = s_ldr_3;	//27
+			s_ldr_3:	//27
+				state_nxt = s_18;		//fetchagain
+
+
+			//**might have to add extra states whiile waiting for r signal
+			//like, i think that instead of waiting for r we find the number of states we need to add instead
+			s_str_1:	//7
+				state_nxt = s_str_2;
+			s_str_2:	//23
+				state_nxt = s_str_3;
+			s_str_3:	//16
+				state_nxt = s_18;		//fetchagain
+
+			s_jsr_1:	//4
+				state_nxt = s_jsr_2;
+			s_jsr_2:	//21
+				state_nxt = s_18;		//fetchagain
+
+			s_jmp:		//12
+				state_nxt = s_18;		//fetchagain
+
+			s_br_1:		//0
+				if (ben)
+					state_nxt = s_br_2;	
+				else	
+					state_nxt = s_18;
+			s_br_2:		//22
+				state_nxt = s_18;		//fetchagain
+
+
+			//end of edits
 			default :;
 		endcase
 	end
