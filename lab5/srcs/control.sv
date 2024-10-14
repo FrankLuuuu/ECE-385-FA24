@@ -217,8 +217,17 @@ module control (
 			//like, i think that instead of waiting for r we find the number of states we need to add instead
 			s_ldr_1:	//6
 				state_nxt = s_ldr_2;	//25
+
+			//added 2 extra states to accomodate for clock for synchronous memeory
+			//because it is not overwritten in current clock cycle, must wait for another
 			s_ldr_2:	//25
+				state_nxt = s_ldr_22;	//wait cycle
+			s_ldr_22:	//25
+				state_nxt = s_ldr_23;	//wait cycle
+			s_ldr_23:	//25
 				state_nxt = s_ldr_3;	//27
+			//end of state 25
+
 			s_ldr_3:	//27
 				state_nxt = s_18;		//fetchagain
 
@@ -227,8 +236,16 @@ module control (
 			//like, i think that instead of waiting for r we find the number of states we need to add instead
 			s_str_1:	//7
 				state_nxt = s_str_2;
+
+			//added 2 extra states to accomodate for clock for synchronous memeory
 			s_str_2:	//23
+				state_nxt = s_str_22;	//wait cycle
+			s_str_22:	//23
+				state_nxt = s_str_23;	//wait cycle
+			s_str_23:	//23
 				state_nxt = s_str_3;
+			//end of  state 23
+
 			s_str_3:	//16
 				state_nxt = s_18;		//fetchagain
 
