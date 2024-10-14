@@ -52,7 +52,17 @@ module control (
 	output logic 		gate_marmux,
 
 	output logic		mem_mem_ena, // Mem Operation Enable
-	output logic		mem_wr_ena  // Mem Write Enable
+	output logic		mem_wr_ena,  // Mem Write Enable
+
+	output logic		sr1muxcontrol,
+	output logic		sr2muxcontrol,
+	output logic [1:0] 	aluk,
+	output logic		ld_cc,
+	output logic		gate_alu,
+	output logic 		drmux_control,
+	output logic		load_reg,
+	output logic [1:0]	addr2mux,
+	output logic		addr1mux,
 );
 
 	
@@ -129,7 +139,7 @@ module control (
 		mem_mem_ena = 1'b0;
 
 		
-	
+		//IMPORTANT: NEED TO SET OTHER GATES TO ZERO AFRER uSEr, NOT IMPLEMENTED
 		// Assign relevant control signals based on current state
 		case (state)
 			halted: ; 
@@ -153,6 +163,56 @@ module control (
 			pause_ir1: ld_led = 1'b1; 
 			pause_ir2: ld_led = 1'b1; 
 			// you need to finish the rest of state output logic..... 
+			s_add:
+				sr1muxcontrol = 1'b0;
+				sr2muxcontrol = 1'b1;
+				aluk = 2'b00;
+				ld_cc = 1'b1;				//ASSUMING THAT LOAD SHOUDL BE HIGH TO LOAD
+				gate_alu = 1'b1;
+				drmux_control = 1'b1;
+				ld_reg = 1'b1;
+			s_add_i:
+				sr1muxcontrol = 1'b0;
+				sr2muxcontrol = 1'b0;
+				aluk = 2'b00;
+				ld_cc = 1'b1;
+				gate_alu = 1'b1;
+				drmux_control =  1'b1;
+				ld_reg = 1'b1;
+			s_and:
+				sr1muxcontrol = 1'b0;
+				sr2muxcontrol = 1'b1;
+				aluk = 2'b01;
+				ld_cc = 1'b1;				//ASSUMING THAT LOAD SHOUDL BE HIGH TO LOAD
+				gate_alu = 1'b1;
+				drmux_control = 1'b1;
+				ld_reg = 1'b1;				
+			s_and_i:
+				sr1muxcontrol = 1'b0;
+				sr2muxcontrol = 1'b0;
+				aluk = 2'b01;
+				ld_cc = 1'b1;				//ASSUMING THAT LOAD SHOUDL BE HIGH TO LOAD
+				gate_alu = 1'b1;
+				drmux_control = 1'b1;
+				ld_reg = 1'b1;	
+			s_not:
+				sr1muxcontrol = 1'b0;
+				aluk = 2'b10;
+				ld_cc = 1'b1;				//ASSUMING THAT LOAD SHOUDL BE HIGH TO LOAD
+				gate_alu = 1'b1;
+				drmux_control = 1'b1;
+				ld_reg = 1'b1;	
+			s_ldr_1:
+				addr2mux = 2'b01;
+				addr1mux = 1'b1;
+				sr1muxcontrol = 1'b0;
+				gate_marmux = 1'b1;
+				ld_mar = 1'b1;
+			s_ldr_2:
+				ld_mdr = 1'b1;
+				mio_en = 1'b1;
+
+			//pick up on s_ldr_2
 
 			default : ;
 		endcase
@@ -164,8 +224,8 @@ module control (
 		// default next state is staying at current state
 		state_nxt = state;
 
-		unique case (state)
-			halted : 
+		unique case (state):
+			halted: 
 				if (run_i) 
 					state_nxt = s_18;
 			s_18 : 
@@ -196,12 +256,51 @@ module control (
 			
 			//edited past this line:
 			s_32:		//decode step
-				state_nxt = s_18;		//fetchagain
+				// state_nxt = s_18;		//fetchagain
 			//THIS IS WRONG IMPLEMENT DECODE HErE
+				// if (ir[15:12] == 4'b0001)
+				// 	state_nxt = s_add;
+				// if (ir[15:12] == 4'b0101)
+				// 	state_nxt = s_and;
+				// if (ir[15:12] == 4'b1001)
+				// 	state_nxt = s_not;
+				// if (ir[15:12] == 4'b0000)
+				// 	state_nxt = s_not;
+				// if (ir[15:12] == 4'b0000)
+				// 	state_nxt = s_not;
+				// 	if (ir[15:12] == 4'b1001)
+				// 	state_nxt = s_not;
+				// 	if (ir[15:12] == 4'b1001)
+				// 	state_nxt = s_not;
+				// 	if (ir[15:12] == 4'b1001)
+				// 	state_nxt = s_not;
+				// 	if (ir[15:12] == 4'b1001)
+				// 	state_nxt = s_not;
+				// 	if (ir[15:12] == 4'b1001)
+				// 	state_nxt = s_not;
+				unique case (ir[15:12]):
+					op_add: 
+						if(~ir[5]):
+							state_nxt = s_add;
+						else:
+							state_nxt = s_add_i;
+					op_and: 
+						if(~ir[5]):
+							state_nxt = s_and;
+						else:
+							state_nxt = s_and_i;
+					op_not: state_nxt = s_not;
+					op_ldr: state_nxt = s_ldr_1;
+					op_str: state_nxt = s_str_1;
+					op_jsr: state_nxt = s_jsr_1;
+					op_jmp: state_nxt = s_jmp;
+					op_br: 	state_nxt = s_br_1;
+					op_pse: state_nxt = s_ps_1;
+				endcase
 
-
-
+			//i send based on the first 4 to add or and, need to add logic to check bit ir[5]
 			s_add:		//1 sr2
+
 				state_nxt = s_18;		//fetchagain
 			s_add_i:	//second add imm5
 				state_nxt = s_18;		//fetchagain
@@ -266,8 +365,9 @@ module control (
 				state_nxt = s_18;		//fetchagain
 
 
+			default :
+			state_nxt = s_18;
 			//end of edits
-			default :;
 		endcase
 	end
 	
