@@ -70,6 +70,133 @@ endmodule
 
 
 
+module addr1_mux (
+    input   logic [15:0]    pc,
+    input   logic [15:0]    sr1_out,
+
+    input   logic           addr1mux,
+
+    output  logic [15:0]    addr1_mux_out
+);
+
+always_comb
+begin
+    if (addr1mux == 1'b0)
+        addr1_mux_out = pc;
+    else   
+        addr1_mux_out = sr1_out;
+end
+endmodule
+
+
+
+module sr1_mux(
+    input   logic [2:0]     eleventhrnine,
+    input   logic [2:0]     eightthrsix,
+
+    input   logic           sr1,
+
+    output  logic           sr1mux_out
+);
+
+always_comb
+begin
+    if (sr1 == 1'b0)
+        sr1mux_out = eightthrsix;
+    else    
+        sr1mux_out = eleventhrnine;    
+end
+endmodule
+
+
+module sr2_mux(
+    input   logic [15:0]    sr2_out,
+    input   logic [15:0]    ir,
+
+    input   logic           control,        //select
+
+    output  logic [15:0]    sr2mux_out
+);
+
+always_comb
+begin
+    if (control == 1'b0)
+        sr2mux_out = ir;
+    else    
+        sr2mux_out = sr2_out;
+end
+endmodule
+
+
+module dr_mux(
+    input logic [2:0] ir,
+    input logic [2:0] ones,
+
+    input logic control,
+
+    output logic [2:0] drmux_out
+);
+
+always_comb
+begin
+    if (control == 1'b1)
+        drmux_out = ir;
+    else
+        drmux_out = ones;
+end
+endmodule
+
+
+module addr2_mux (
+    input   logic [15:0]    elevenbits,
+    input   logic [15:0]    ninebits,
+    input   logic [15:0]    sixbits, 
+    // input   logic [15:0]    ir,
+    input   logic [15:0]    zeroes, 
+
+    input   logic [1:0]     addr2mux,
+    
+    output  logic [15:0]    addr2_mux_out
+);
+
+always_comb
+begin
+    if (addr2mux == 2'b00)
+        addr2_mux_out = zeroes;
+    else if (addr2mux == 2'b01)
+        addr2_mux_out = sixbits;
+    else if (addr2mux == 2'b10)
+        addr2_mux_out = ninebits;
+    else
+        addr2_mux_out = elevenbits;
+end
+endmodule
+
+
+
+module alu_mux (
+    input logic [1:0] aluk,
+    input logic [15:0] A,
+    input logic [15:0] B,
+    
+    output logic [15:0] alu
+);
+
+always_comb
+begin
+    if (aluk == 0)
+        out = A + B;
+    else if (aluk == 1)
+        out = A & B;
+    else if (aluk == 2)
+        out = ~A;
+    else 
+        out = A;
+end
+endmodule
+
+
+
 module decoder(
     input   logic [2:0] dr,
 
