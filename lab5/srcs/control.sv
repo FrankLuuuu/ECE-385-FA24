@@ -38,17 +38,18 @@ module control (
 	output logic		ld_ir,
 	output logic		ld_pc,
 	output logic        ld_led,
+	output logic        ld_ben,
+	output logic        ld_cc,
+	output logic        ld_reg,
 						
 	output logic		gate_pc,
 	output logic		gate_mdr,
 						
 	output logic [1:0]	pcmux,
-
-
 	output logic 		mio_en,
 	
 	//You should add additional control signals according to the SLC-3 datapath design
-	// output logic 		gate_alu,
+	output logic 		gate_alu,
 	output logic 		gate_marmux,
 
 	output logic		mem_mem_ena, // Mem Operation Enable
@@ -57,10 +58,7 @@ module control (
 	output logic		sr1muxcontrol,
 	output logic		sr2muxcontrol,
 	output logic [1:0] 	aluk,
-	output logic		ld_cc,
-	output logic		gate_alu,
 	output logic 		drmux_control,
-	output logic		load_reg,
 	output logic [1:0]	addr2mux,
 	output logic		addr1mux,
 );
@@ -87,11 +85,15 @@ module control (
 
 		s_ldr_1,	//6
 		s_ldr_2,	//25
+		s_ldr_22,	//25 wait state
+		s_ldr_23,	//25 wait state
 		s_ldr_3,	//27
 
 		s_str_1,	//7
 		s_str_2,	//23
 		s_str_3,	//16
+		s_str_32,	//16 wait state
+		s_str_33,	//16 wait state
 
 		s_jsr_1,	//4
 		s_jsr_2,	//21
@@ -128,12 +130,26 @@ module control (
 		ld_ir = 1'b0;
 		ld_pc = 1'b0;
 		ld_led = 1'b0;
+		ld_ben = 1'b0;
+		ld_cc = 1'b0;
+		ld_reg = 1'b0;
 		
 		gate_pc = 1'b0;
 		gate_mdr = 1'b0;
 		 
 		pcmux = 2'b00;
 
+		gate_alu = 1'b0;
+		gate_marmux = 1'b0;
+
+		mem_wr_ena = 1'b0;
+
+		sr1muxcontrol = 1'b0;
+		sr2muxcontrol = 1'b0;
+		aluk = 2'b00;
+		drmux_control = 1'b0;
+		addr2mux = 2'b00;
+		addr1mux = 1'b0;
 
 		mio_en = 1'b0;					
 		mem_mem_ena = 1'b0;
@@ -163,7 +179,11 @@ module control (
 			pause_ir1: ld_led = 1'b1; 
 			pause_ir2: ld_led = 1'b1; 
 			// you need to finish the rest of state output logic..... 
-			s_add:
+			s_32:
+				ld_ben = 1'b1;
+
+			s_add: //1
+			begin
 				sr1muxcontrol = 1'b0;
 				sr2muxcontrol = 1'b1;
 				aluk = 2'b00;
@@ -171,7 +191,10 @@ module control (
 				gate_alu = 1'b1;
 				drmux_control = 1'b1;
 				ld_reg = 1'b1;
-			s_add_i:
+			end
+
+			s_add_i: //1 ir[5]=1
+			begin
 				sr1muxcontrol = 1'b0;
 				sr2muxcontrol = 1'b0;
 				aluk = 2'b00;
@@ -179,15 +202,21 @@ module control (
 				gate_alu = 1'b1;
 				drmux_control =  1'b1;
 				ld_reg = 1'b1;
-			s_and:
+			end
+
+			s_and: //5
+			begin
 				sr1muxcontrol = 1'b0;
 				sr2muxcontrol = 1'b1;
 				aluk = 2'b01;
 				ld_cc = 1'b1;				//ASSUMING THAT LOAD SHOUDL BE HIGH TO LOAD
 				gate_alu = 1'b1;
 				drmux_control = 1'b1;
-				ld_reg = 1'b1;				
-			s_and_i:
+				ld_reg = 1'b1;		
+			end
+
+			s_and_i: //5 ir[5]=1
+			begin
 				sr1muxcontrol = 1'b0;
 				sr2muxcontrol = 1'b0;
 				aluk = 2'b01;
@@ -195,23 +224,116 @@ module control (
 				gate_alu = 1'b1;
 				drmux_control = 1'b1;
 				ld_reg = 1'b1;	
-			s_not:
+			end
+
+			s_not: //9
+			begin
 				sr1muxcontrol = 1'b0;
 				aluk = 2'b10;
 				ld_cc = 1'b1;				//ASSUMING THAT LOAD SHOUDL BE HIGH TO LOAD
 				gate_alu = 1'b1;
 				drmux_control = 1'b1;
 				ld_reg = 1'b1;	
-			s_ldr_1:
+			end
+
+			s_ldr_1: //6
+			begin
 				addr2mux = 2'b01;
 				addr1mux = 1'b1;
 				sr1muxcontrol = 1'b0;
 				gate_marmux = 1'b1;
 				ld_mar = 1'b1;
-			s_ldr_2:
+			end
+
+			s_ldr_2: //25
+				mem_mem_ena = 1'b1;
+			
+			s_ldr_22: //25 wait state
+				mem_mem_ena = 1'b1;
+
+			s_ldr_23: //25 wait state
+			begin
 				ld_mdr = 1'b1;
+				mio_en = 1'b0;
+			end
+
+			s_ldr_3: //27
+			begin
+				gate_mdr = 1'b1;
+				ld_cc = 1'b1;
+				ld_reg = 1'b1;
+				drmux_control = 1'b1;
+			end
+
+			s_str_1:	//7
+			begin
+				addr2mux = 2'b01;
+				addr1mux = 1'b1;
+				sr1muxcontrol = 1'b0;
+				gate_marmux = 1'b1;
+				ld_mar = 1'b1;
+			end
+
+			s_str_2:	//23
+			begin
+				sr1muxcontrol = 1'b1;
+				ld_mdr = 1'b1;
+				aluk = 2'b11;
 				mio_en = 1'b1;
-			s_ldr_3:
+				gate_alu = 1'b1;
+			end
+	
+			s_str_3:	//16
+			begin
+				mem_mem_ena = 1'b1;
+				mem_wr_ena = 1'b1;
+			end
+
+			s_str_32:	//16 wait state
+			begin
+				mem_mem_ena = 1'b1;
+				mem_wr_ena = 1'b1;
+			end
+
+			s_str_33:	//16 wait state
+			begin
+				mem_mem_ena = 1'b1;
+				mem_wr_ena = 1'b1;
+			end
+
+			s_jsr_1:	//4
+			begin
+				drmux_control = 1'b0;
+				ld_reg = 1'b1;
+				gate_pc = 1'b1;
+			end
+
+			s_jsr_2:	//21
+			begin
+				ld_pc = 1'b1;
+				addr1mux = 1'b0;
+				addr2mux = 2'b11;
+				pcmux = 2'b01;
+			end
+
+			s_jmp:		//12
+			begin
+				sr1muxcontrol = 1'b0;
+				aluk = 2'b11;
+				gate_alu = 1'b1;
+				pcmux = 2'b11;
+				ld_pc = 1'b1;
+			end
+
+			s_br_1:;	//0
+
+			s_br_2:		//22
+			begin
+				ld_pc = 1'b1;
+				addr1mux = 1'b0;
+				addr2mux = 2'b10;
+				pcmux = 2'b01;
+			end
 
 			//pick up on s_ldr_3, you should not need to change anything for s_ldr_22 or s_ldr_23 
 
@@ -279,24 +401,25 @@ module control (
 				// 	state_nxt = s_not;
 				// 	if (ir[15:12] == 4'b1001)
 				// 	state_nxt = s_not;
-				unique case (ir[15:12]):
-					op_add: 
-						if(~ir[5]):
+				case(ir[15:12])
+					4'b0001: 
+						if(~ir[5])
 							state_nxt = s_add;
-						else:
+						else
 							state_nxt = s_add_i;
-					op_and: 
-						if(~ir[5]):
+					4'b0101: 
+						if(~ir[5])
 							state_nxt = s_and;
-						else:
+						else
 							state_nxt = s_and_i;
-					op_not: state_nxt = s_not;
-					op_ldr: state_nxt = s_ldr_1;
-					op_str: state_nxt = s_str_1;
-					op_jsr: state_nxt = s_jsr_1;
-					op_jmp: state_nxt = s_jmp;
-					op_br: 	state_nxt = s_br_1;
-					op_pse: state_nxt = s_ps_1;
+					4'b1001: state_nxt = s_not;
+					4'b0110: state_nxt = s_ldr_1;
+					4'b0111: state_nxt = s_str_1;
+					4'b0100: state_nxt = s_jsr_1;
+					4'b1100: state_nxt = s_jmp;
+					4'b0000: state_nxt = s_br_1;
+					4'b1101: state_nxt = pause_ir1;
+					default: state_nxt = s_18;
 				endcase
 
 			//i send based on the first 4 to add or and, need to add logic to check bit ir[5]
@@ -340,14 +463,14 @@ module control (
 			//added 2 extra states to accomodate for clock for synchronous memeory
 			s_str_2:	//23
 				state_nxt = s_str_22;	//wait cycle
-			s_str_22:	//23
-				state_nxt = s_str_23;	//wait cycle
-			s_str_23:	//23
-				state_nxt = s_str_3;
-			//end of  state 23
 
-			s_str_3:	//16
+			s_str_31:	//16
+				state_nxt = s_str_23;	//wait cycle
+			s_str_32:	//16
+				state_nxt = s_str_3;
+			s_str_33:	//16
 				state_nxt = s_18;		//fetchagain
+			//end of state 16
 
 			s_jsr_1:	//4
 				state_nxt = s_jsr_2;
@@ -366,8 +489,7 @@ module control (
 				state_nxt = s_18;		//fetchagain
 
 
-			default :
-			state_nxt = s_18;
+			default:; //have to stay at current state
 			//end of edits
 		endcase
 	end

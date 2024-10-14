@@ -185,13 +185,13 @@ module alu_mux (
 always_comb
 begin
     if (aluk == 0)
-        out = A + B;
+        alu = A + B;
     else if (aluk == 1)
-        out = A & B;
+        alu = A & B;
     else if (aluk == 2)
-        out = ~A;
+        alu = ~A;
     else 
-        out = A;
+        alu = A;
 end
 endmodule
 
