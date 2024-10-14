@@ -64,7 +64,7 @@ logic           ben;
 logic [2:0]     nzp;
 logic [2:0]     logic_nzp;
 
-logic [15:0]    bus;
+logic [15:0]    bus;                //assuming busmux out
 logic [15:0]    alu;
 logic [15:0]    pcmux_out;
 logic [15:0]    mio_en_out;
@@ -80,9 +80,10 @@ logic [15:0]    sr2_out;
 logic [15:0]    sr2mux_out;
 logic [15:0]    sr1mux_out;
 logic [2:0]     drmux_out;
+logic           drmux_control;
 
 logic           sr2muxcontrol;      //sr2 mux control
-logic           sr1;                //sr1 mux control
+logic           sr1muxcontrol;      //sr1 mux control
 
 
 assign mem_addr = mar;
@@ -171,7 +172,7 @@ sr1_mux sr1mux(
     .eleventhrnine(ir[11:9]),
     .eightthrsix(ir[8:6]),
 
-    .sr1(sr1),
+    .sr1(sr1muxcontrol),
 
     .sr1mux_out(sr1mux_out)
 );

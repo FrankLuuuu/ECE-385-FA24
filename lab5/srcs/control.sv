@@ -211,8 +211,9 @@ module control (
 			s_ldr_2:
 				ld_mdr = 1'b1;
 				mio_en = 1'b1;
+			s_ldr_3:
 
-			//pick up on s_ldr_2
+			//pick up on s_ldr_3, you should not need to change anything for s_ldr_22 or s_ldr_23 
 
 			default : ;
 		endcase
