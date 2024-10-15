@@ -29,7 +29,7 @@ endmodule
 
 module pc_mux(
     input   logic [15:0] data_bus,        // left most wire
-    input   logic [15:0] gate_marmux,     // middle wire
+    input   logic [15:0] addr,     // middle wire
     input   logic [15:0] pc_plus_1,       // right most wire
 
     input   logic [1:0]  select,          // the wires to select the input
@@ -42,7 +42,7 @@ begin
     if (select == 2'b00)
         pcmux_out = pc_plus_1;           // select = 0
     else if (select == 2'b01)
-        pcmux_out = gate_marmux;        // select = 1
+        pcmux_out = addr;        // select = 1
     else 
         pcmux_out = data_bus;          // avoids the infered latch by making all other values (b'10 or b'11) pc plus 1
 end
@@ -96,7 +96,7 @@ module sr1_mux(
 
     input   logic           sr1,
 
-    output  logic           sr1mux_out
+    output  logic [2:0]     sr1mux_out
 );
 
 always_comb
@@ -185,13 +185,13 @@ module alu_mux (
 always_comb
 begin
     if (aluk == 0)
-        out = A + B;
+        alu = A + B;
     else if (aluk == 1)
-        out = A & B;
+        alu = A & B;
     else if (aluk == 2)
-        out = ~A;
+        alu = ~A;
     else 
-        out = A;
+        alu = A;
 end
 endmodule
 

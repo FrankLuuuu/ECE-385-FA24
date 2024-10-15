@@ -1,3 +1,5 @@
+//`timescale 1ns / 1ps
+
 module testbench();
 
 timeunit 1ns;
@@ -27,12 +29,15 @@ processor_top test_lc3(.*);
 
 initial begin: TEST
     
+    repeat(5) @(posedge clk);
+    sw_i = 16'h0003;
+       
+    repeat(5) @(posedge clk);
+
     reset = 1;
     repeat(4) @(posedge clk);
     reset <= 0;
     
-//    repeat(5) @(posedge clk);
-//    sw_i = 16'h000b;
     
     repeat(5) @(posedge clk);
     run_i <= 1;
@@ -40,17 +45,26 @@ initial begin: TEST
     repeat(5) @(posedge clk);
     run_i <= 0;
     
-    repeat(10) @(posedge clk);
-    continue_i <= 1;
+    repeat(5) @(posedge clk);
+    sw_i = 16'h0008;
     
-    repeat(10) @(posedge clk);
-    continue_i <= 0;
+    repeat(5) @(posedge clk);
+    sw_i = 16'h005d;  
+      
+    repeat(5) @(posedge clk);
+    sw_i = 16'h0004;
     
-    repeat(10) @(posedge clk);
-    continue_i <= 1;
+//    repeat(10) @(posedge clk);
+//    continue_i <= 1;
     
-    repeat(10) @(posedge clk);
-    continue_i <= 0;
+//    repeat(10) @(posedge clk);
+//    continue_i <= 0;
+    
+//    repeat(10) @(posedge clk);
+//    continue_i <= 1;
+    
+//    repeat(10) @(posedge clk);
+//    continue_i <= 0;
     
 end
 

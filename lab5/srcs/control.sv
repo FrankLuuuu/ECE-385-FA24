@@ -38,33 +38,76 @@ module control (
 	output logic		ld_ir,
 	output logic		ld_pc,
 	output logic        ld_led,
+	output logic        ld_ben,
+	output logic        ld_cc,
+	output logic        ld_reg,
 						
 	output logic		gate_pc,
 	output logic		gate_mdr,
 						
 	output logic [1:0]	pcmux,
-
-
 	output logic 		mio_en,
 	
 	//You should add additional control signals according to the SLC-3 datapath design
-	// output logic 		gate_alu,
+	output logic 		gate_alu,
 	output logic 		gate_marmux,
 
 	output logic		mem_mem_ena, // Mem Operation Enable
-	output logic		mem_wr_ena  // Mem Write Enable
+	output logic		mem_wr_ena,  // Mem Write Enable
+
+	output logic		sr1muxcontrol,
+	output logic		sr2muxcontrol,
+	output logic [1:0] 	aluk,
+	output logic 		drmux_control,
+	output logic [1:0]	addr2mux,
+	output logic		addr1mux
 );
 
-
+	
 	enum logic [4:0] {
 		halted, 
 		pause_ir1,
 		pause_ir2, 
-		s_18, 
-		s_33_1,
+		s_18, 		//top steps that fetch
+		s_33_1,		//provided
 		s_33_2,
 		s_33_3,
-		s_35
+		s_35,
+
+		//new states
+		s_32,		//decode step
+
+		s_add,		//1 sr2
+		s_add_i,	//second add imm5
+		s_and,		//5 sr2
+		s_and_i, 	//second and imm5
+		s_not, 		//9
+
+		s_ldr_1,	//6
+		s_ldr_2,	//25
+		s_ldr_22,	//25 wait state
+		s_ldr_23,	//25 wait state
+		s_ldr_3,	//27
+
+		s_str_1,	//7
+		s_str_2,	//23
+		s_str_3,	//16
+		s_str_32,	//16 wait state
+		s_str_33,	//16 wait state
+
+		s_jsr_1,	//4
+		s_jsr_2,	//21
+
+		s_jmp,		//12
+
+		s_br_1,		//0
+		s_br_2		//22
+
+		//scratch that theyre provided
+		// s_ps_1,		//continue pressed
+		// s_ps_2,		//continue released
+
+		//end of added sstates
 	} state, state_nxt;   // Internal state logic
 
 
@@ -87,18 +130,32 @@ module control (
 		ld_ir = 1'b0;
 		ld_pc = 1'b0;
 		ld_led = 1'b0;
+		ld_ben = 1'b0;
+		ld_cc = 1'b0;
+		ld_reg = 1'b0;
 		
 		gate_pc = 1'b0;
 		gate_mdr = 1'b0;
 		 
 		pcmux = 2'b00;
 
+		gate_alu = 1'b0;
+		gate_marmux = 1'b0;
+
+		mem_wr_ena = 1'b0;
+
+		sr1muxcontrol = 1'b0;
+		sr2muxcontrol = 1'b0;
+		aluk = 2'b00;
+		drmux_control = 1'b0;
+		addr2mux = 2'b00;
+		addr1mux = 1'b0;
 
 		mio_en = 1'b0;					
 		mem_mem_ena = 1'b0;
 
 		
-	
+		//IMPORTANT: NEED TO SET OTHER GATES TO ZERO AFRER uSEr, NOT IMPLEMENTED
 		// Assign relevant control signals based on current state
 		case (state)
 			halted: ; 
@@ -122,6 +179,163 @@ module control (
 			pause_ir1: ld_led = 1'b1; 
 			pause_ir2: ld_led = 1'b1; 
 			// you need to finish the rest of state output logic..... 
+			s_32:
+				ld_ben = 1'b1;
+
+			s_add: //1
+			begin
+				sr1muxcontrol = 1'b0;
+				sr2muxcontrol = 1'b1;
+				aluk = 2'b00;
+				ld_cc = 1'b1;				//ASSUMING THAT LOAD SHOUDL BE HIGH TO LOAD
+				gate_alu = 1'b1;
+				drmux_control = 1'b1;
+				ld_reg = 1'b1;
+			end
+
+			s_add_i: //1 ir[5]=1
+			begin
+				sr1muxcontrol = 1'b0;
+				sr2muxcontrol = 1'b0;
+				aluk = 2'b00;
+				ld_cc = 1'b1;
+				gate_alu = 1'b1;
+				drmux_control =  1'b1;
+				ld_reg = 1'b1;
+			end
+
+			s_and: //5
+			begin
+				sr1muxcontrol = 1'b0;
+				sr2muxcontrol = 1'b1;
+				aluk = 2'b01;
+				ld_cc = 1'b1;				//ASSUMING THAT LOAD SHOUDL BE HIGH TO LOAD
+				gate_alu = 1'b1;
+				drmux_control = 1'b1;
+				ld_reg = 1'b1;		
+			end
+
+			s_and_i: //5 ir[5]=1
+			begin
+				sr1muxcontrol = 1'b0;
+				sr2muxcontrol = 1'b0;
+				aluk = 2'b01;
+				ld_cc = 1'b1;				//ASSUMING THAT LOAD SHOUDL BE HIGH TO LOAD
+				gate_alu = 1'b1;
+				drmux_control = 1'b1;
+				ld_reg = 1'b1;	
+			end
+
+			s_not: //9
+			begin
+				sr1muxcontrol = 1'b0;
+				aluk = 2'b10;
+				ld_cc = 1'b1;				//ASSUMING THAT LOAD SHOUDL BE HIGH TO LOAD
+				gate_alu = 1'b1;
+				drmux_control = 1'b1;
+				ld_reg = 1'b1;	
+			end
+
+			s_ldr_1: //6
+			begin
+				addr2mux = 2'b01;
+				addr1mux = 1'b1;
+				sr1muxcontrol = 1'b0;
+				gate_marmux = 1'b1;
+				ld_mar = 1'b1;
+			end
+
+			s_ldr_2: //25
+				mem_mem_ena = 1'b1;
+			
+			s_ldr_22: //25 wait state
+				mem_mem_ena = 1'b1;
+
+			s_ldr_23: //25 wait state
+			begin
+				ld_mdr = 1'b1;
+				mio_en = 1'b0;
+			end
+
+			s_ldr_3: //27
+			begin
+				gate_mdr = 1'b1;
+				ld_cc = 1'b1;
+				ld_reg = 1'b1;
+				drmux_control = 1'b1;
+			end
+
+			s_str_1:	//7
+			begin
+				addr2mux = 2'b01;
+				addr1mux = 1'b1;
+				sr1muxcontrol = 1'b0;
+				gate_marmux = 1'b1;
+				ld_mar = 1'b1;
+			end
+
+			s_str_2:	//23
+			begin
+				sr1muxcontrol = 1'b1;
+				ld_mdr = 1'b1;
+				aluk = 2'b11;
+				mio_en = 1'b1;
+				gate_alu = 1'b1;
+			end
+	
+			s_str_3:	//16
+			begin
+				mem_mem_ena = 1'b1;
+				mem_wr_ena = 1'b1;
+			end
+
+			s_str_32:	//16 wait state
+			begin
+				mem_mem_ena = 1'b1;
+				mem_wr_ena = 1'b1;
+			end
+
+			s_str_33:	//16 wait state
+			begin
+				mem_mem_ena = 1'b1;
+				mem_wr_ena = 1'b1;
+			end
+
+			s_jsr_1:	//4
+			begin
+				drmux_control = 1'b0;
+				ld_reg = 1'b1;
+				gate_pc = 1'b1;
+			end
+
+			s_jsr_2:	//21
+			begin
+				ld_pc = 1'b1;
+				addr1mux = 1'b0;
+				addr2mux = 2'b11;
+				pcmux = 2'b01;
+			end
+
+			s_jmp:		//12
+			begin
+				sr1muxcontrol = 1'b0;
+				aluk = 2'b11;
+				gate_alu = 1'b1;
+				pcmux = 2'b11;
+				ld_pc = 1'b1;
+			end
+
+			s_br_1:;	//0
+
+			s_br_2:		//22
+			begin
+				ld_pc = 1'b1;
+				addr1mux = 1'b0;
+				addr2mux = 2'b10;
+				pcmux = 2'b01;
+			end
+
+			//pick up on s_ldr_3, you should not need to change anything for s_ldr_22 or s_ldr_23 
 
 			default : ;
 		endcase
@@ -134,7 +348,7 @@ module control (
 		state_nxt = state;
 
 		unique case (state)
-			halted : 
+			halted: 
 				if (run_i) 
 					state_nxt = s_18;
 			s_18 : 
@@ -146,18 +360,137 @@ module control (
 			s_33_3 : 
 				state_nxt = s_35;
 			s_35 : 
-				state_nxt = pause_ir1;
+				state_nxt = s_32;
 			// pause_ir1 and pause_ir2 are only for week 1 such that TAs can see 
 			// the values in ir.
+
+			//EDITED TO REMOVE INFERRED LATCH
 			pause_ir1 : 
 				if (continue_i) 
 					state_nxt = pause_ir2;
+				else
+					state_nxt = pause_ir1;
 			pause_ir2 : 
 				if (~continue_i)
 					state_nxt = s_18;
+				else
+					state_nxt = pause_ir2;
 			// you need to finish the rest of state transition logic.....
 			
-			default :;
+			//edited past this line:
+			s_32:		//decode step
+				// state_nxt = s_18;		//fetchagain
+			//THIS IS WRONG IMPLEMENT DECODE HErE
+				// if (ir[15:12] == 4'b0001)
+				// 	state_nxt = s_add;
+				// if (ir[15:12] == 4'b0101)
+				// 	state_nxt = s_and;
+				// if (ir[15:12] == 4'b1001)
+				// 	state_nxt = s_not;
+				// if (ir[15:12] == 4'b0000)
+				// 	state_nxt = s_not;
+				// if (ir[15:12] == 4'b0000)
+				// 	state_nxt = s_not;
+				// 	if (ir[15:12] == 4'b1001)
+				// 	state_nxt = s_not;
+				// 	if (ir[15:12] == 4'b1001)
+				// 	state_nxt = s_not;
+				// 	if (ir[15:12] == 4'b1001)
+				// 	state_nxt = s_not;
+				// 	if (ir[15:12] == 4'b1001)
+				// 	state_nxt = s_not;
+				// 	if (ir[15:12] == 4'b1001)
+				// 	state_nxt = s_not;
+				case(ir[15:12])
+					4'b0001: 
+						if(~ir[5])
+							state_nxt = s_add;
+						else
+							state_nxt = s_add_i;
+					4'b0101: 
+						if(~ir[5])
+							state_nxt = s_and;
+						else
+							state_nxt = s_and_i;
+					4'b1001: state_nxt = s_not;
+					4'b0110: state_nxt = s_ldr_1;
+					4'b0111: state_nxt = s_str_1;
+					4'b0100: state_nxt = s_jsr_1;
+					4'b1100: state_nxt = s_jmp;
+					4'b0000: state_nxt = s_br_1;
+					4'b1101: state_nxt = pause_ir1;
+					default: state_nxt = s_18;
+				endcase
+
+			//i send based on the first 4 to add or and, need to add logic to check bit ir[5]
+			s_add:		//1 sr2
+
+				state_nxt = s_18;		//fetchagain
+			s_add_i:	//second add imm5
+				state_nxt = s_18;		//fetchagain
+			s_and:		//5 sr2
+				state_nxt = s_18;		//fetchagain
+			s_and_i: 	//second and imm5
+				state_nxt = s_18;		//fetchagain
+			s_not: 		//9
+				state_nxt = s_18;		//fetchagain
+
+
+			//**might have to add extra states whiile waiting for r signal
+			//like, i think that instead of waiting for r we find the number of states we need to add instead
+			s_ldr_1:	//6
+				state_nxt = s_ldr_2;	//25
+
+			//added 2 extra states to accomodate for clock for synchronous memeory
+			//because it is not overwritten in current clock cycle, must wait for another
+			s_ldr_2:	//25
+				state_nxt = s_ldr_22;	//wait cycle
+			s_ldr_22:	//25
+				state_nxt = s_ldr_23;	//wait cycle
+			s_ldr_23:	//25
+				state_nxt = s_ldr_3;	//27
+			//end of state 25
+
+			s_ldr_3:	//27
+				state_nxt = s_18;		//fetchagain
+
+
+			//**might have to add extra states whiile waiting for r signal
+			//like, i think that instead of waiting for r we find the number of states we need to add instead
+			s_str_1:	//7
+				state_nxt = s_str_2;
+
+			//added 2 extra states to accomodate for clock for synchronous memeory
+			s_str_2:	//23
+				state_nxt = s_str_3;	//wait cycle
+
+			s_str_3:	//16
+				state_nxt = s_str_32;	//wait cycle
+			s_str_32:	//16
+				state_nxt = s_str_33;
+			s_str_33:	//16
+				state_nxt = s_18;		//fetchagain
+			//end of state 16
+
+			s_jsr_1:	//4
+				state_nxt = s_jsr_2;
+			s_jsr_2:	//21
+				state_nxt = s_18;		//fetchagain
+
+			s_jmp:		//12
+				state_nxt = s_18;		//fetchagain
+
+			s_br_1:		//0
+				if (ben)
+					state_nxt = s_br_2;	
+				else	
+					state_nxt = s_18;
+			s_br_2:		//22
+				state_nxt = s_18;		//fetchagain
+
+
+			default:; //have to stay at current state
+			//end of edits
 		endcase
 	end
 	

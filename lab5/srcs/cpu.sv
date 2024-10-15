@@ -64,25 +64,27 @@ logic           ben;
 logic [2:0]     nzp;
 logic [2:0]     logic_nzp;
 
-logic [15:0]    bus;
+
+logic [15:0]    bus;                //assuming busmux out
 logic [15:0]    alu;
 logic [15:0]    pcmux_out;
 logic [15:0]    mio_en_out;
 
 logic           addr1mux;           //the select for the mux
-logic           addr2mux;           //the select for the addr2 mux
+logic [1:0]     addr2mux;           //the select for the addr2 mux
 logic [1:0]     aluk;               //what alu function to do
-logic           addr1_mux_out;      //the output of the mux
-logic           addr2_mux_out;      //the output of the addr2 mux
+logic [15:0]    addr1_mux_out;      //the output of the mux
+logic [15:0]    addr2_mux_out;      //the output of the addr2 mux
 
 logic [15:0]    sr1_out;
 logic [15:0]    sr2_out;
 logic [15:0]    sr2mux_out;
-logic [15:0]    sr1mux_out;
+logic [2:0]     sr1mux_out;
 logic [2:0]     drmux_out;
+logic           drmux_control;
 
 logic           sr2muxcontrol;      //sr2 mux control
-logic           sr1;                //sr1 mux control
+logic           sr1muxcontrol;      //sr1 mux control
 
 
 assign mem_addr = mar;
@@ -115,8 +117,8 @@ bus_mux busmux (
 
 pc_mux PCmux(
     .data_bus(bus),
-    .gate_marmux(addr1_mux_out + addr2_mux_out),
-    .pc_plus_1(pc + 1),
+    .addr(addr1_mux_out + addr2_mux_out),
+    .pc_plus_1(pc + 1'b1),
     
     .select(pcmux),
 
@@ -132,7 +134,8 @@ mio_en_mux miomux(
     .mio_en_mux_out(mio_en_out)
 );
 
-regfile register_file (
+regfile registerfile (
+
     .clk(clk),
     .reset(reset),
 
@@ -153,13 +156,13 @@ addr1_mux addr1(
     .addr1mux(addr1mux),
 
     .addr1_mux_out(addr1_mux_out)
-),
+);
 
 addr2_mux addr2(
     .elevenbits({ir[10], ir[10], ir[10], ir[10], ir[10], ir[10:0]}),
     .ninebits({ir[8], ir[8], ir[8], ir[8], ir[8], ir[8], ir[8], ir[8:0]}),
     .sixbits({ir[5], ir[5], ir[5], ir[5], ir[5], ir[5], ir[5], ir[5], ir[5], ir[5], ir[5:0]}),
-    .zeroes(0), // check if error is 0
+    .zeroes(16'h0000), // check if error is 0
 
     .addr2mux(addr2mux),
 
@@ -171,7 +174,7 @@ sr1_mux sr1mux(
     .eleventhrnine(ir[11:9]),
     .eightthrsix(ir[8:6]),
 
-    .sr1(sr1),
+    .sr1(sr1muxcontrol),
 
     .sr1mux_out(sr1mux_out)
 );
@@ -179,9 +182,9 @@ sr1_mux sr1mux(
 
 sr2_mux sr2mux(
     .sr2_out(sr2_out),
-    .ir(ir[4], ir[4], ir[4], ir[4], ir[4], ir[4], ir[4], ir[4], ir[4], ir[4], ir[4], ir[4:0]),
+    .ir({ir[4], ir[4], ir[4], ir[4], ir[4], ir[4], ir[4], ir[4], ir[4], ir[4], ir[4], ir[4:0]}),
 
-    .control(sr2mux_control),
+    .control(sr2muxcontrol),
 
     .sr2mux_out(sr2mux_out)
 );
