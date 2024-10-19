@@ -1,5 +1,3 @@
-//`timescale 1ns / 1ps
-
 module testbench();
 
 timeunit 1ns;
@@ -53,18 +51,6 @@ initial begin: TEST
       
     repeat(5) @(posedge clk);
     sw_i = 16'h0004;
-    
-//    repeat(10) @(posedge clk);
-//    continue_i <= 1;
-    
-//    repeat(10) @(posedge clk);
-//    continue_i <= 0;
-    
-//    repeat(10) @(posedge clk);
-//    continue_i <= 1;
-    
-//    repeat(10) @(posedge clk);
-//    continue_i <= 0;
     
 end
 
