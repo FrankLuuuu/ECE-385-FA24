@@ -69,7 +69,7 @@ module mb_usb_hdmi_top(
         .hex_grid(hex_gridB)
     );
     
-    mb_usb mb_block_i (
+    mb_block mb_block_i (
         .clk_100MHz(Clk),
         .gpio_usb_int_tri_i(gpio_usb_int_tri_i),
         .gpio_usb_keycode_0_tri_o(keycode0_gpio),
@@ -137,7 +137,7 @@ module mb_usb_hdmi_top(
     //Ball Module
     ball ball_instance(
         .Reset(reset_ah),
-        .frame_clk(),                    //Figure out what this should be so that the ball will move
+        .frame_clk(vsync),                    //Figure out what this should be so that the ball will move
         .keycode(keycode0_gpio[7:0]),    //Notice: only one keycode connected to ball by default
         .BallX(ballxsig),
         .BallY(ballysig),
