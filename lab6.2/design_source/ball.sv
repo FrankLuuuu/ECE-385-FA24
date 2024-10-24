@@ -54,29 +54,24 @@ module  ball
         if (keycode == 8'h1A) 
         begin                                               //up        W is 26
             Ball_Y_Motion_next = -10'd1;                    //          1 y up
-            Ball_X_Motion_next = 0;
+            Ball_X_Motion_next = 10'd0;
         end 
         else if (keycode == 8'h16) 
         begin                                               //down      S is 22
             Ball_Y_Motion_next = 10'd1;                     //          1 y down
-            Ball_X_Motion_next = 0;
+            Ball_X_Motion_next = 10'd0;
         end 
         else if (keycode == 8'h4)  
         begin                                               //left      A is 4   
             Ball_X_Motion_next = -10'd1;                    //          1 x left
-            Ball_Y_Motion_next = 0;
+            Ball_Y_Motion_next = 10'd0;
         end 
         else if (keycode == 8'h7) 
         begin                                               //right     D is 7
             Ball_X_Motion_next = 10'd1;                     //          1 x right
-            Ball_Y_Motion_next = 0;
+            Ball_Y_Motion_next = 10'd0;
         end 
-        // else 
-        // begin
-        //     Ball_X_Motion_next = 10'd0;                     //remove inferred latch
-        //     Ball_Y_Motion_next = 10'd0;                     //          sets 0 movement
-        // end
-
+        
 
         if ( (BallY + BallS) >= Ball_Y_Max )  // Ball is at the bottom edge, BOUNCE!
         begin

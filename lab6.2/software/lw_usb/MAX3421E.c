@@ -121,7 +121,7 @@ BYTE* MAXbytes_wr(BYTE reg, BYTE nbytes, BYTE* data) {
     writeData[0] = reg + 2;
 
     // Write data via SPI
-    for (int i = 1; i < nbytes + 1; i++) {
+    for(int i = 1; i < nbytes + 1; i++) {
 		writeData[i] = data[i - 1];
 	}
 
@@ -194,7 +194,32 @@ BYTE* MAXbytes_rd(BYTE reg, BYTE nbytes, BYTE* data) {
 	//deselect MAX3421E (may not be necessary if you are using SPI peripheral)
 	//return (data + nbytes);
 
-	
+	BYTE readData[nbytes + 1];
+	BYTE writeData[nbytes + 1];
+
+	// Select MAX3421E
+    Status = XSpi_SetSlaveSelect(&SpiInstance, 1);
+    if (Status != XST_SUCCESS) {
+        xil_printf("SPI select error: %d\n", Status);
+    }
+
+	// Prepare data: reg for read mode
+    writeData[0] = reg;
+
+	// Read data via SPI
+    status = XSpi_Transfer(&SpiInstance, writeData, readData, nbytes + 1);
+    if (status != XST_SUCCESS) {
+   		xil_printf("SPI read error: %d\n", status);
+    }
+
+    for(int i = 1; i < nbytes + 1; i++) {
+		data[i - 1] = readData[i];
+	}
+
+	// Deselect MAX3421E
+    XSpi_SetSlaveSelect(&SpiInstance, 0);
+
+    return data + nbytes;
 }
 
 
