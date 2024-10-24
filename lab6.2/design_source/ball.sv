@@ -51,15 +51,24 @@ module  ball
 
         //modify to control ball motion with the keycode
         //these are the buttons right? I can't do w or s, so im reolcaing those with b and c
-        if (keycode == 8'h1A) begin                         //up        W is 26
+        if (keycode == 8'h1A) 
+        begin                                               //up        W is 26
             Ball_Y_Motion_next = -10'd1;                    //          1 y up
-        end else if (keycode == 8'h16) begin                //down      S is 22
+        end 
+        else if (keycode == 8'h16) 
+        begin                                               //down      S is 22
             Ball_Y_Motion_next = 10'd1;                     //          1 y down
-        end else if (keycode == 8'h4)  begin                //left      A is 4   
+        end 
+        else if (keycode == 8'h4)  
+        begin                                               //left      A is 4   
             Ball_X_Motion_next = -10'd1;                    //          1 x left
-        end else if (keycode == 8'h7) begin                 //right     D is 7
+        end 
+        else if (keycode == 8'h7) 
+        begin                                               //right     D is 7
             Ball_X_Motion_next = 10'd1;                     //          1 x right
-        end else begin
+        end 
+        else 
+        begin
             Ball_X_Motion_next = 10'd0;                     //remove inferred latch
             Ball_Y_Motion_next = 10'd0;                     //          sets 0 movement
         end
