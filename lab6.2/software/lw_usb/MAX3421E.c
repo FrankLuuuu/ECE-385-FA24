@@ -73,6 +73,27 @@ void MAXreg_wr(BYTE reg, BYTE val) {
 	//read return code from SPI peripheral (see Xilinx examples) 
 	//if return code != 0 print an error
 	//deselect MAX3421E (may not be necessary if you are using SPI peripheral)
+
+	BYTE writeData[2];
+
+    // Select MAX3421E
+    Status = XSpi_SetSlaveSelect(&SpiInstance, 1);
+    if (Status != XST_SUCCESS) {
+        xil_printf("SPI select error: %d\n", Status);
+    }
+
+    // Prepare data: reg + 2 for write mode
+    writeData[0] = reg + 2;
+    writeData[1] = val;
+
+    // Write the two bytes via SPI
+    Status = XSpi_Transfer(&SpiInstance, writeData, writeData, 2);
+    if (Status != XST_SUCCESS) {
+        xil_printf("SPI write error: %d\n", Status);
+    }
+
+    // Deselect MAX3421E
+    XSpi_SetSlaveSelect(&SpiInstance, 0);
 }
 
 
@@ -87,6 +108,33 @@ BYTE* MAXbytes_wr(BYTE reg, BYTE nbytes, BYTE* data) {
 	//if return code != 0 print an error
 	//deselect MAX3421E (may not be necessary if you are using SPI peripheral)
 	//return (data + nbytes);
+
+    BYTE writeData[nbytes + 1];
+
+    // Select MAX3421E
+    Status = XSpi_SetSlaveSelect(&SpiInstance, 1);
+    if (Status != XST_SUCCESS) {
+        xil_printf("SPI select error: %d\n", Status);
+    }
+
+    // Prepare the data: reg + 2 for write mode
+    writeData[0] = reg + 2;
+
+    // Write data via SPI
+    for (int i = 1; i < nbytes + 1; i++) {
+		writeData[i] = data[i - 1];
+	}
+
+    // Send register address
+    Status = XSpi_Transfer(&SpiInstance, writeData, writeData, nbytes + 1);
+    if (Status != XST_SUCCESS) {
+        xil_printf("SPI write error: %d\n", Status);
+    }
+
+    // Deselect MAX3421E
+    XSpi_SetSlaveSelect(&SpiInstance, 0);
+
+    return data + nbytes;
 }
 
 /* Single host register read        */
@@ -99,6 +147,37 @@ BYTE MAXreg_rd(BYTE reg) {
 	//if return code != 0 print an error
 	//deselect MAX3421E (may not be necessary if you are using SPI peripheral)
 	//return val
+
+    // Select MAX3421E
+    Status = XSpi_SetSlaveSelect(&SpiInstance, 1);
+    if (Status != XST_SUCCESS) {
+        xil_printf("SPI select error: %d\n", Status);
+    }
+
+    // BYTE writeData = reg;
+    // BYTE readData = 0;
+
+    // // Write register address
+    // Status = XSpi_Transfer(&SpiInstance, writeData, writeData, 1);
+    // if (Status != XST_SUCCESS) {
+    //     xil_printf("SPI write error: %d\n", Status);
+    // }
+
+    // // Read the value from the register
+    // Status = XSpi_Transfer(&SpiInstance, readData, readData, 1);
+
+	BYTE readData[2];
+	readData[0] = reg;
+
+    status = XSpi_Transfer(&SpiInstance, readData, readData, 2);
+    if (Status != XST_SUCCESS) {
+        xil_printf("SPI read error: %d\n", Status);
+    }
+
+    // Deselect MAX3421E
+    XSpi_SetSlaveSelect(&SpiInstance, 0);
+
+    return readData[1];
 }
 
 
@@ -114,7 +193,12 @@ BYTE* MAXbytes_rd(BYTE reg, BYTE nbytes, BYTE* data) {
 	//if return code != 0 print an error
 	//deselect MAX3421E (may not be necessary if you are using SPI peripheral)
 	//return (data + nbytes);
+
+	
 }
+
+
+
 /* reset MAX3421E using chip reset bit. SPI configuration is not affected   */
 void MAX3421E_reset(void) {
 	Status = XGpio_Initialize(&Gpio_rst, XPAR_GPIO_USB_RST_DEVICE_ID);
