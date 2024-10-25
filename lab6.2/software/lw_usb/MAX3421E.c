@@ -169,7 +169,7 @@ BYTE MAXreg_rd(BYTE reg) {
 	BYTE readData[2];
 	readData[0] = reg;
 
-    status = XSpi_Transfer(&SpiInstance, readData, readData, 2);
+    Status = XSpi_Transfer(&SpiInstance, readData, readData, 2);
     if (Status != XST_SUCCESS) {
         xil_printf("SPI read error: %d\n", Status);
     }
@@ -207,9 +207,9 @@ BYTE* MAXbytes_rd(BYTE reg, BYTE nbytes, BYTE* data) {
     writeData[0] = reg;
 
 	// Read data via SPI
-    status = XSpi_Transfer(&SpiInstance, writeData, readData, nbytes + 1);
-    if (status != XST_SUCCESS) {
-   		xil_printf("SPI read error: %d\n", status);
+    Status = XSpi_Transfer(&SpiInstance, writeData, readData, nbytes + 1);
+    if (Status != XST_SUCCESS) {
+   		xil_printf("SPI read error: %d\n", Status);
     }
 
     for(int i = 1; i < nbytes + 1; i++) {
