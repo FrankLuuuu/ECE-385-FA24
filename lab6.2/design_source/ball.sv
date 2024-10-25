@@ -61,12 +61,12 @@ module  ball
             Ball_Y_Motion_next = 10'd1;                     //          1 y down
             Ball_X_Motion_next = 10'd0;
         end 
-        else if (keycode == 8'h4)  
+        else if (keycode == 8'h04)  
         begin                                               //left      A is 4   
             Ball_X_Motion_next = -10'd1;                    //          1 x left
             Ball_Y_Motion_next = 10'd0;
         end 
-        else if (keycode == 8'h7) 
+        else if (keycode == 8'h07) 
         begin                                               //right     D is 7
             Ball_X_Motion_next = 10'd1;                     //          1 x right
             Ball_Y_Motion_next = 10'd0;
