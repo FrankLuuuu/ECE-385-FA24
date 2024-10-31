@@ -42,7 +42,7 @@ module  vga_controller ( input        pixel_clk,        // 50 MHz clock
     logic [9:0] hc, vc;
     
 	 // signal indicates if ok to display color for a pixel
-	 logic display;
+	logic display;
 	 
     //Disable Composite Sync
     assign sync = 1'b0;

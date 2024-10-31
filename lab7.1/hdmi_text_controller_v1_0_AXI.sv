@@ -34,7 +34,7 @@ module hdmi_text_controller_v1_0_AXI #
     // Width of S_AXI data bus
     parameter integer C_S_AXI_DATA_WIDTH	= 32,
     // Width of S_AXI address bus
-    parameter integer C_S_AXI_ADDR_WIDTH	= 4
+    parameter integer C_S_AXI_ADDR_WIDTH	= 12
 )
 (
     // Users to add ports here
@@ -134,7 +134,7 @@ localparam integer OPT_MEM_ADDR_BITS = 1;
 //Note: the provided Verilog template had the registered declared as above, but in order to give 
 //students a hint we have replaced the 4 individual registers with an unpacked array of packed logic. 
 //Note that you as the student will still need to extend this to the full register set needed for the lab.
-logic [C_S_AXI_DATA_WIDTH-1:0] slv_regs[4];
+logic [C_S_AXI_DATA_WIDTH-1:0] slv_regs[601];
 logic	 slv_reg_rden;
 logic	 slv_reg_wren;
 logic [C_S_AXI_DATA_WIDTH-1:0]	 reg_data_out;
