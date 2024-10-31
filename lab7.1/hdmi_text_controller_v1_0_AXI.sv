@@ -100,7 +100,9 @@ module hdmi_text_controller_v1_0_AXI #
     output logic  S_AXI_RVALID,
     // Read ready. This signal indicates that the master can
         // accept the read data and response information.
-    input logic  S_AXI_RREADY
+    input logic  S_AXI_RREADY,
+
+    output logic [31:0] slv_regs[601]
 );
 
 // AXI4LITE signals
