@@ -286,5 +286,3 @@ module hdmi_text_controller_tb();
 	end
     
 endmodule	
-
-	

@@ -18,7 +18,7 @@
 //                        output logic [3:0]  Red, Green, Blue );
 module  color_mapper (  input logic [9:0] DrawX, DrawY, 
                         input logic [31:0] VGA_RAM [601],
-                        output logic [7:0]  Red, Green, Blue );
+                        output logic [3:0]  Red, Green, Blue );
     
     // logic pixel_on;
     logic [7:0] char_pixels_ret;
@@ -119,59 +119,3 @@ module  color_mapper (  input logic [9:0] DrawX, DrawY,
 //         end      
 //     end
 endmodule
-
-
-
-
-// OLD AND PROBALBLY DELTEABLE
-    """
-    /* Old Ball: Generated square box by checking if the current pixel is within a square of length
-    2*BallS, centered at (BallX, BallY).  Note that this requires unsigned comparisons.
-	 
-    if ((DrawX >= BallX - Ball_size) &&
-       (DrawX <= BallX + Ball_size) &&
-       (DrawY >= BallY - Ball_size) &&
-       (DrawY <= BallY + Ball_size))
-       )
-
-     New Ball: Generates (pixelated) circle by using the standard circle formula.  Note that while 
-     this single line is quite powerful descriptively, it causes the synthesis tool to use up three
-     of the 120 available multipliers on the chip!  Since the multiplicants are required to be signed,
-	  we have to first cast them from logic to int (signed by default) before they are multiplied). */
-	  
-    int DistX, DistY, Size;
-    assign DistX = DrawX - BallX;
-    assign DistY = DrawY - BallY;
-    assign Size = Ball_size;
-  
-    always_comb
-    begin:Ball_on_proc
-        if ( (DistX*DistX + DistY*DistY) <= (Size * Size) )
-            ball_on = 1'b1;
-        else 
-            ball_on = 1'b0;
-     end 
-
-    always_comb
-    begin:RGB_Display
-        if ((ball_on == 1'b1)) begin 
-            Red = 4'hf;
-            Green = 4'h7;
-            Blue = 4'h0;
-        end       
-        else begin 
-            Red = 4'hf - DrawX[9:6]; 
-            Green = 4'hf - DrawX[9:6];
-            Blue = 4'hf - DrawX[9:6];
-        end      
-    end     
-
-
-    FOR THIS WEEK's LAB:
-        take DRAWx and DRAWy and map to a text mode charater, 
-        map the registers
-        map the pixils 
-        use the forn_rom
-
-
-    """

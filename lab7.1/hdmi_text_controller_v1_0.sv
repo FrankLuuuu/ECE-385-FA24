@@ -93,7 +93,7 @@ hdmi_text_controller_v1_0_AXI # (
     .S_AXI_RVALID(axi_rvalid),
     .S_AXI_RREADY(axi_rready),
 
-    .slv_regs(VGA_RAM)  //is this correct?
+    .slv(VGA_RAM)
 );
 
 

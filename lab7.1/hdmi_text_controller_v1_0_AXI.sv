@@ -102,7 +102,7 @@ module hdmi_text_controller_v1_0_AXI #
         // accept the read data and response information.
     input logic  S_AXI_RREADY,
 
-    output logic [31:0] slv_regs[601] //not sure what to do with this
+    output logic [31:0] slv[601]
 );
 
 // AXI4LITE signals
@@ -137,6 +137,7 @@ localparam integer OPT_MEM_ADDR_BITS = 9;
 //students a hint we have replaced the 4 individual registers with an unpacked array of packed logic. 
 //Note that you as the student will still need to extend this to the full register set needed for the lab.
 logic [C_S_AXI_DATA_WIDTH-1:0] slv_regs[601];
+assign slv = slv_regs;
 logic	 slv_reg_rden;
 logic	 slv_reg_wren;
 logic [C_S_AXI_DATA_WIDTH-1:0]	 reg_data_out;
@@ -395,4 +396,3 @@ end
 // User logic ends
 
 endmodule
-
