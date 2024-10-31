@@ -13,7 +13,7 @@ module hdmi_text_controller_v1_0 #
     // Modify parameters as necessary for access of full VRAM range
 
     parameter integer C_AXI_DATA_WIDTH	= 32,
-    parameter integer C_AXI_ADDR_WIDTH	= 4 
+    parameter integer C_AXI_ADDR_WIDTH	= 12
 )
 (
     // Users to add ports here
