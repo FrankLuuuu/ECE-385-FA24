@@ -228,6 +228,20 @@ module hdmi_text_controller_tb();
     //Note the read handshake process is simpler than the write
     task axi_read (input logic [31:0] addr, output logic [31:0] data);
         begin
+            read_addr <= addr;
+            read_addr_valid <= 1'b1;
+            read_data_ready <= 1'b1;
+            
+            wait(read_addr_ready);
+            
+            @(posedge aclk);
+            read_addr_valid <= 1'b0;
+            data <= read_data;
+            
+            wait(read_data_valid);
+            
+            @(posedge aclk);
+            read_data_ready <= 1'b0;
         end
     endtask;
   
