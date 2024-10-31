@@ -102,7 +102,7 @@ module hdmi_text_controller_v1_0_AXI #
         // accept the read data and response information.
     input logic  S_AXI_RREADY,
 
-    output logic [31:0] slv_regs[601]
+    output logic [31:0] slv_regs[601] //not sure what to do with this
 );
 
 // AXI4LITE signals
