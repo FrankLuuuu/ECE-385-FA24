@@ -52,11 +52,12 @@ module  color_mapper (  input logic [9:0] DrawX, DrawY,
 
     logic [31:0] register;
     logic [7:0] character;
+    logic [3:0] bkg_b, bkg_g, bkg_r, fgd_b, fgd_g, fgd_r;
 
     //VGA RAM is what Zuofu called the 600 reg in lecture
     assign register = VGA_RAM[cur_reg];                             //get the register of pixel
 
-    assign character = (register >> (char_in_reg * 8)) & 32'h000F;  //get the content of the register
+    assign character = register[char_in_reg * 8 +: 8];  //get the content of the register
 
     //below is the logic that grabs the collors frosm the contral register
     logic [31:0] control_reg;
