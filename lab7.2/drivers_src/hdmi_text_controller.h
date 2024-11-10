@@ -9,17 +9,43 @@
 
 #define COLUMNS 80
 #define ROWS 30
+#define PALETTE_START 0x2000
 
-//define some colors
-#define WHITE 		0xFFF
-#define BRIGHT_RED 	0xF00
-#define DIM_RED    	0x700
-#define BRIGHT_GRN	0x0F0
-#define DIM_GRN		0x070
-#define BRIGHT_BLU  0x00F
-#define DIM_BLU		0x007
-#define GRAY		0x777
-#define BLACK		0x000
+struct TEXT_HDMI_STRUCT {
+	uint8_t		      	VRAM [ROWS*COLUMNS*2]; 									 //Week 2 - extended VRAM
+	//modify this by adding const bytes to skip to palette, or manually compute palette
+};
+
+struct COLOR{
+	char name [20];
+	uint8_t red;
+	uint8_t green;
+	uint8_t blue;
+};
+
+
+//you may have to change this line depending on your platform designer
+static volatile struct TEXT_HDMI_STRUCT* hdmi_ctrl = XPAR_HDMI_TEXT_CONTROLLER_0_AXI_BASEADDR;
+
+//CGA colors with names
+static struct COLOR colors[]={
+    {"black",          0x0, 0x0, 0x0},
+	{"blue",           0x0, 0x0, 0xa},
+    {"green",          0x0, 0xa, 0x0},
+	{"cyan",           0x0, 0xa, 0xa},
+    {"red",            0xa, 0x0, 0x0},
+	{"magenta",        0xa, 0x0, 0xa},
+    {"brown",          0xa, 0x5, 0x0},
+	{"light gray",     0xa, 0xa, 0xa},
+    {"dark gray",      0x5, 0x5, 0x5},
+	{"light blue",     0x5, 0x5, 0xf},
+    {"light green",    0x5, 0xf, 0x5},
+	{"light cyan",     0x5, 0xf, 0xf},
+    {"light red",      0xf, 0x5, 0x5},
+	{"light magenta",  0xf, 0x5, 0xf},
+    {"yellow",         0xf, 0xf, 0x5},
+	{"white",          0xf, 0xf, 0xf}
+};
 
 /**************************** Type Definitions *****************************/
 /**
@@ -82,17 +108,12 @@
  * @note    Self test may fail if data memory and device are not on the same bus.
  *
  */
- 
-struct HDMI_TEXT_STRUCT {
-	uint8_t  VRAM [ROWS*COLUMNS];
-	uint32_t CTRL;
-};
 
-//you may have to change this line depending on the memory map of your block design
-static volatile struct HDMI_TEXT_STRUCT* hdmi_ctrl = XPAR_HDMI_TEXT_CONTROLLER_0_AXI_BASEADDR;
-
-void hdmiSetColor(int background, int foreground);
-void hdmiClr();
-void hdmiTestWeek1(); //Call this function from your main function for your demo.
+void textHDMIColorClr();
+void textHDMIDrawColorText(char* str, int x, int y, uint8_t background, uint8_t foreground);
+void setColorPalette (uint8_t color, uint8_t red, uint8_t green, uint8_t blue); //Fill in this code
+void paletteTest();
+void textHDMIColorScreenSaver();
+void hdmiTestWeek2(); //call this for your Week 2 demo 
 
 #endif // HDMI_TEXT_CONTROLLER_H
