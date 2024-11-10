@@ -55,6 +55,17 @@ void textHDMIDrawColorText(char* str, int x, int y, uint8_t background, uint8_t 
 void setColorPalette (uint8_t color, uint8_t red, uint8_t green, uint8_t blue)
 {
 	//fill in this function to set the color palette starting at offset 0x0000 2000 (from base)
+	// red green and blue are types uint_8 (8 bit wide data path), but only 4 of those paths are used
+	// j color is the integer index into the color pallete where j is between 0 and 16
+	// palate is organized as:
+	// 		address	|	31-28	|	27-24	|	23-20	|	19-16	|	15-12	|	11-8	|	7-4		|	3-0
+	// 		0x800	|	unused	|	c1_r	|	c1_g	|	c1_b	|	unused	|	c0_r	|	c0_g	|	c0_b
+	// hdmi_ctrl->VRAM[2000 + 2*color : 2000 + 2*color + 2] = 0x0 << 12 | red << 8 | green << 4 | blue;
+	
+	hdmi_ctrl->VRAM[2000 + 2*color] 	= green << 4 | blue;	// place green and blue
+	hdmi_ctrl->VRAM[2000 + 2*color +1] 	= 0x0 << 4 | red;		// place unused and red
+
+	// I think this is all that is needed for this function
 }
 
 
