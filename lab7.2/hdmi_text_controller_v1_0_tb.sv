@@ -236,12 +236,14 @@ module hdmi_text_controller_tb();
             
             @(posedge aclk);
             read_addr_valid <= 1'b0;
-            data <= read_data;
+            read_addr_ready <= 1'b0;
             
             wait(read_data_valid);
             
             @(posedge aclk);
+            data <= read_data;
             read_data_ready <= 1'b0;
+            read_data_valid <= 1'b0;
         end
     endtask;
   
@@ -286,4 +288,3 @@ module hdmi_text_controller_tb();
 	end
     
 endmodule	
-

@@ -253,7 +253,7 @@ module  color_mapper (  input   logic [9:0]     DrawX, DrawY,
     assign pixel_row = DrawY % 16;                      //gives the pixel row of the character
     assign pixel_col = DrawX % 8;                       //gives the pixel col of the character
 
-
+    logic [7:0] character;
     assign character = register[char_in_reg * 8 +: 8];  //get the content of the register
 
     // logic pixel_on;

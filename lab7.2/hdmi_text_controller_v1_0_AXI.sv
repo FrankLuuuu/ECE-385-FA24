@@ -127,7 +127,7 @@ logic  axi_rvalid;
 // ADDR_LSB = 2 for 32 bits (n downto 2)
 // ADDR_LSB = 3 for 64 bits (n downto 3)
 localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH/32) + 1;
-localparam integer OPT_MEM_ADDR_BITS = 11;                                                   //maybe change value
+localparam integer OPT_MEM_ADDR_BITS = 13;                                                   //maybe change value
 //----------------------------------------------
 //-- Signals for user logic register space example
 //------------------------------------------------
@@ -339,7 +339,8 @@ begin
     end 
 end       
 
-logic axi_rvalid_wait;
+//logic axi_rvalid_wait;
+logic counter;
 
 // Implement axi_arvalid generation
 // axi_rvalid is asserted for one S_AXI_ACLK clock cycle when both 
@@ -349,20 +350,58 @@ logic axi_rvalid_wait;
 // bus and axi_rresp indicates the status of read transaction.axi_rvalid 
 // is deasserted on reset (active low). axi_rresp and axi_rdata are 
 // cleared to zero on reset (active low).  
+//always_ff @( posedge S_AXI_ACLK )
+//begin
+//  if ( S_AXI_ARESETN == 1'b0 )
+//    begin
+//      axi_rvalid_wait <= 0;
+//      axi_rresp  <= 0;
+//      counter = 0
+//    end 
+//  else
+//    begin    
+//      if (axi_arready && S_AXI_ARVALID && ~axi_rvalid) //and ~counter
+//      // counter = 1
+//      //else if counter = 1
+//        begin
+//          // Valid read data is available at the read data bus
+//          axi_rvalid_wait <= 1'b1;
+//          axi_rresp  <= 2'b0; // 'OKAY' response
+//          //counter = 0
+//        end   
+//      else if (axi_rvalid && S_AXI_RREADY)
+//        begin
+//          // Read data is accepted by the master
+//          axi_rvalid_wait <= 1'b0;
+//        end                
+//    end
+//end    
+
+//always_ff @( posedge S_AXI_ACLK )
+//begin
+//  axi_rvalid <= axi_rvalid_wait;
+//end 
+
 always_ff @( posedge S_AXI_ACLK )
 begin
   if ( S_AXI_ARESETN == 1'b0 )
     begin
       axi_rvalid <= 0;
       axi_rresp  <= 0;
+      counter <= 1'b0;
     end 
   else
     begin    
-      if (axi_arready && S_AXI_ARVALID && ~axi_rvalid)
+      if (axi_arready && S_AXI_ARVALID && ~axi_rvalid && ~counter)
+        begin
+          counter <= 1'b1;
+        end
+      else if (counter == 1'b1)
         begin
           // Valid read data is available at the read data bus
-          axi_rvalid_wait <= 1'b1;
+          axi_rvalid <= 1'b1;
           axi_rresp  <= 2'b0; // 'OKAY' response
+          counter <= 1'b0;
         end   
       else if (axi_rvalid && S_AXI_RREADY)
         begin
@@ -371,11 +410,6 @@ begin
         end                
     end
 end    
-
-always_ff @( posedge S_AXI_ACLK )
-begin
-  axi_rvalid <= axi_rvalid_wait;
-end 
 
 // Implement memory mapped register select and read logic generation
 // Slave register read enable is asserted when valid address is available
@@ -412,9 +446,9 @@ always_ff @( posedge S_AXI_ACLK )                                               
 begin
   if (slv_reg_wren == 1) //writing to bram
     begin 
-      addr_bram <= axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+      addr_bram <= axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
       strobe <= S_AXI_WSTRB;
-      if (axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 600)
+      if (axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 600)
         begin
           control_reg <= S_AXI_WDATA;
           strobe <= 4'b0000;
@@ -434,7 +468,7 @@ blk_mem_gen_0 bram_inst (
   .addra(addr_bram), // addresses the memory space for port A Read and write operations, 11 bits
   .clka(S_AXI_ACLK), // should be same as clkb, 1 bit
   .dina(S_AXI_WDATA), // data input to be written into memory through port A, 32 bits
-  .douta(S_AXI_RDATA), // data output from read operations through port A, 32 bits
+  .douta(axi_rdata), // data output from read operations through port A, 32 bits
   .ena(1'b1), // enables read, wrtie, and reset operations through port A, 1 bit
   .wea(strobe), // enables write operations through port A, 4 bits
 // color mapper
