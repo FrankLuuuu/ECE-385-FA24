@@ -462,6 +462,7 @@ begin
       if (VRAM_or_palette)  // 1 == palette
         begin
           palette_registers[axi_awaddr[4:2]] <= S_AXI_WDATA; // truncate byte address into word address
+//          palette_registers[axi_awaddr[2:0]] <= S_AXI_WDATA;
           strobe <= 4'b0000;
         end
     end

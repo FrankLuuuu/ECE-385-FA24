@@ -191,10 +191,16 @@ module  color_mapper (  input logic [9:0] DrawX, DrawY,
     logic [3:0] bkg_b, bkg_g, bkg_r, fgd_b, fgd_g, fgd_r;
 
     //below is the logic that grabs the collors frosm the color palatte
+    logic [31:0] colorback, colorfor;
     logic [15:0] colorb, colorf;
 
-    assign colorb = color_palatte[bkg/2][(bkg[0])*16 +:16];          //get the 16 bits of bkg color
-    assign colorf = color_palatte[fgd/2][(fgd[0])*16 +:16];          //get the 16 bits of fgd color
+    assign colorback = color_palatte[bkg/2];          //get the 16 bits of bkg color
+    assign colorfor = color_palatte[fgd/2];          //get the 16 bits of fgd color
+    assign colorb = colorback[(bkg[0])*16 +:16];          //get the 16 bits of bkg color
+    assign colorf = colorfor[(fgd[0])*16 +:16];          //get the 16 bits of fgd color
+
+//    assign colorb = color_palatte[bkg/2][(bkg[0])*16 +:16];          //get the 16 bits of bkg color
+//    assign colorf = color_palatte[fgd/2][(fgd[0])*16 +:16];          //get the 16 bits of fgd color
 
     assign bkg_b = colorb[3:0];
     assign bkg_g = colorb[7:4];
