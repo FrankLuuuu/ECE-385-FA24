@@ -148,6 +148,7 @@ localparam integer OPT_MEM_ADDR_BITS = 13;                                      
 logic [C_S_AXI_DATA_WIDTH-1:0] palette_registers[8];
 assign color_palatte = palette_registers;
 logic VRAM_or_palette;
+logic VRAM_or_palette_read;
 logic [3:0] strobe;
 logic [10:0] addr_bram;
 logic	 slv_reg_rden;
@@ -157,6 +158,7 @@ integer	 byte_index;
 logic	 aw_en;
 
 assign VRAM_or_palette = axi_awaddr[13];
+assign VRAM_or_palette_read = axi_araddr[13];
 
 // I/O Connections assignments
 
@@ -417,36 +419,47 @@ begin
     end
 end    
 
+
+
+
+
 // Implement memory mapped register select and read logic generation
 // Slave register read enable is asserted when valid address is available
 // and the slave is ready to accept the read address.
-// assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
+ assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
+ 
 // always_comb
 // begin
 //       // Address decoding for reading registers
-//      reg_data_out = slv_regs[axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB]];                  // check from reg to 
+//      reg_data_out = palette_registers[axi_araddr[4:2]];                  // check from reg to 
 // end
 
 // assign axi_rdata = reg_data_out;
 
-// // Output register or memory read data
-// always_ff @( posedge S_AXI_ACLK )
-// begin
-//   if ( S_AXI_ARESETN == 1'b0 )
-//     begin
-//       axi_rdata  <= 0;
-//     end 
-//   else
-//     begin    
-//       // When there is a valid read address (S_AXI_ARVALID) with 
-//       // acceptance of read address by the slave (axi_arready), 
-//       // output the read dada 
-//       if (slv_reg_rden)
-//         begin
-//           axi_rdata <= reg_data_out;     // register read data
-//         end   
-//     end
-// end    
+ // Output register or memory read data
+ always_ff @( posedge S_AXI_ACLK )
+ begin
+   if ( S_AXI_ARESETN == 1'b0 )
+     begin
+       axi_rdata  <= 0;
+     end 
+   else
+     begin    
+       // When there is a valid read address (S_AXI_ARVALID) with 
+       // acceptance of read address by the slave (axi_arready), 
+       // output the read dada 
+       if (VRAM_or_palette_read)
+            begin
+                axi_rdata <= palette_registers[axi_araddr[4:2]];     // register read data
+            end   
+       else 
+            axi_rdata <= reg_data_out;
+     end
+ end    
+
+
+
+
 
 always_ff @( posedge S_AXI_ACLK )                                                   // need to check control reg
 begin
@@ -461,9 +474,19 @@ begin
       //   end
       if (VRAM_or_palette)  // 1 == palette
         begin
-          palette_registers[axi_awaddr[4:2]] <= S_AXI_WDATA; // truncate byte address into word address
-//          palette_registers[axi_awaddr[2:0]] <= S_AXI_WDATA;
-          strobe <= 4'b0000;
+//          palette_registers[axi_awaddr[4:2]] <= S_AXI_WDATA; // truncate byte address into word address
+//            case (S_AXI_WSTRB)
+//                4'b0011: palette_registers[axi_awaddr[4:2]] <= {palette_registers[axi_awaddr[4:2]][31:16], S_AXI_WDATA[15:0]};
+//                4'b1100: palette_registers[axi_awaddr[4:2]] <= {S_AXI_WDATA[31:16], palette_registers[axi_awaddr[4:2]][15:0]};
+//            endcase
+            for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
+                if ( S_AXI_WSTRB[byte_index] == 1 ) 
+                begin
+             // Respective byte enables are asserted as per write strobes, note the use of the index part select operator
+             // '+:', you will need to understand how this operator works.
+                    palette_registers[axi_awaddr[4:2]][(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+                end  
+            strobe <= 4'b0000;
         end
     end
   else
@@ -480,7 +503,7 @@ blk_mem_gen_0 bram_inst (
   .addra(addr_bram), // addresses the memory space for port A Read and write operations, 11 bits
   .clka(S_AXI_ACLK), // should be same as clkb, 1 bit
   .dina(S_AXI_WDATA), // data input to be written into memory through port A, 32 bits
-  .douta(axi_rdata), // data output from read operations through port A, 32 bits
+  .douta(reg_data_out), // data output from read operations through port A, 32 bits
   .ena(1'b1), // enables read, wrtie, and reset operations through port A, 1 bit                      // maybe change this to ren
   .wea(strobe), // enables write operations through port A, 4 bits
 // color mapper

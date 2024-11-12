@@ -139,7 +139,7 @@
 
 // this function definition mmgh fave to be fixed but i passed the fariables that i worked off the assumption that i had
 module  color_mapper (  input logic [9:0] DrawX, DrawY, 
-                        output logic [10:0] char_index,              // we do not need to pass in all of VRAM, just the specific address?
+                            output logic [10:0] char_index,              // we do not need to pass in all of VRAM, just the specific address?
                         
                         input logic [31:0] color_palatte[8],       //pass color palated 
                         input logic [31:0]  character_word,
