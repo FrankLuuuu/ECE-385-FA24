@@ -162,9 +162,9 @@ hdmi_text_controller_v1_0_AXI # (
         .DrawX(drawX),
         .DrawY(drawY),
         // .control_reg(control_register),
-        .cur_reg(register_index),
+        .char_index(register_index),
         .color_palatte(palette_registers),
-        .register(out_register),
+        .character_word(out_register),
         .Red(red),
         .Green(green),
         .Blue(blue)
