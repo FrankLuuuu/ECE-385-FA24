@@ -154,7 +154,7 @@ module  color_mapper (  input logic [9:0] DrawX, DrawY,
     assign char_row = DrawY / 16;                       //gives the row of the character on the screen
     assign char_col = DrawX / 8;                        //gives the col of the character on the screen
 
-    assign char_index = char_row * 40 + char_col;       //gives the index of character in rastor order
+    assign char_index = (char_row * 80 + char_col) / 2;       //gives the index of character in rastor order
 
     int char_in_word;
     assign char_in_word = char_col % 2;
@@ -166,7 +166,8 @@ module  color_mapper (  input logic [9:0] DrawX, DrawY,
     assign character = character_info[14:8];
 
     logic [3:0] bkg, fgd;
-    assign fgd, bkg = character_info[7:0];
+    assign fgd = character_info[7:4];
+    assign bkg = character_info[3:0];
 
     int pixel_row, pixel_col;
     assign pixel_row = DrawY % 16;                      //gives the pixel row of the character
@@ -192,8 +193,8 @@ module  color_mapper (  input logic [9:0] DrawX, DrawY,
     //below is the logic that grabs the collors frosm the color palatte
     logic [15:0] colorb, colorf;
 
-    assign colorb = color_palatte[bkg/2][(bkg%2)*16 +:16];          //get the 16 bits of bkg color
-    assign colorf = color_palatte[fgd/2][(fgd%2)*16 +:16];          //get the 16 bits of fgd color
+    assign colorb = color_palatte[bkg/2][(bkg[0])*16 +:16];          //get the 16 bits of bkg color
+    assign colorf = color_palatte[fgd/2][(fgd[0])*16 +:16];          //get the 16 bits of fgd color
 
     assign bkg_b = colorb[3:0];
     assign bkg_g = colorb[7:4];
@@ -201,7 +202,7 @@ module  color_mapper (  input logic [9:0] DrawX, DrawY,
     assign fgd_b = colorf[3:0];
     assign fgd_g = colorf[7:4];
     assign fgd_r = colorf[11:8];
-
+    
 
     
     always_comb

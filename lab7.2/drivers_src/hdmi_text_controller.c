@@ -63,8 +63,17 @@ void setColorPalette (uint8_t color, uint8_t red, uint8_t green, uint8_t blue)
 	// hdmi_ctrl->VRAM[2000 + 2*color : 2000 + 2*color + 2] = 0x0 << 12 | red << 8 | green << 4 | blue;
 	
 	// NEED TO CHANGE INDEXING LOGIC - needs to be 32 bits also
-	hdmi_ctrl->palatte[2*color] 	= green << 4 | blue;	// place green and blue
-	hdmi_ctrl->palatte[2*color + 1] = 0x0 << 4 | red;		// place unused and red
+	uint32_t color_byte, orig_word, masked_word, new_word;
+	int byte_in_word;
+	color_byte = (uint32_t)0x0 << 12 | (uint32_t)red << 8 | (uint32_t)green << 4 | (uint32_t)blue;									// assuming colors are lower 4 bits of 8 bits
+
+	orig_word = hdmi_ctrl->palatte[color / 2]; 		//stack overflow said c floor int divisio so blame them if this is wrong
+	byte_in_word = color % 2;
+
+	masked_word = orig_word && ((uint32_t)0x0000ffff << ((1-byte_in_word)*16));
+	new_word = masked_word || (color_byte << (byte_in_word*16));
+	
+	hdmi_ctrl->palatte[color / 2] = new_word;	
 
 	// I think this is all that is needed for this function
 }
