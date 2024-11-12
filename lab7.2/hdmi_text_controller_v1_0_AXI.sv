@@ -104,7 +104,8 @@ module hdmi_text_controller_v1_0_AXI #
 
     // output logic [31:0] slv[601]
 
-    output logic [31:0] ctrl_reg,
+    // output logic [31:0] ctrl_reg,
+    output logic [31:0] color_palatte[8],
     output logic [31:0] out_reg,
     input logic [10:0] reg_index
 );
@@ -142,8 +143,11 @@ localparam integer OPT_MEM_ADDR_BITS = 13;                                      
 //Note that you as the student will still need to extend this to the full register set needed for the lab.
 // logic [C_S_AXI_DATA_WIDTH-1:0] slv_regs[601];
 // assign slv = slv_regs;
-logic [C_S_AXI_DATA_WIDTH-1:0] control_reg;
-assign ctrl_reg = control_reg;
+// logic [C_S_AXI_DATA_WIDTH-1:0] control_reg;
+// assign ctrl_reg = control_reg;
+logic [C_S_AXI_DATA_WIDTH-1:0] palette_registers[8];
+assign color_palatte = palette_registers;
+logic VRAM_or_palette;
 logic [3:0] strobe;
 logic [10:0] addr_bram;
 logic	 slv_reg_rden;
@@ -151,6 +155,8 @@ logic	 slv_reg_wren;
 logic [C_S_AXI_DATA_WIDTH-1:0]	 reg_data_out;
 integer	 byte_index;
 logic	 aw_en;
+
+assign VRAM_or_palette = axi_awaddr[13];
 
 // I/O Connections assignments
 
@@ -448,9 +454,14 @@ begin
     begin 
       addr_bram <= axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
       strobe <= S_AXI_WSTRB;
-      if (axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 600)
+      // if (axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 600)
+      //   begin
+      //     control_reg <= S_AXI_WDATA;
+      //     strobe <= 4'b0000;
+      //   end
+      if (VRAM_or_palette)  // 1 == palette
         begin
-          control_reg <= S_AXI_WDATA;
+          palette_registers[axi_awaddr[4:2]] <= S_AXI_WDATA; // truncate byte address into word address
           strobe <= 4'b0000;
         end
     end
@@ -469,7 +480,7 @@ blk_mem_gen_0 bram_inst (
   .clka(S_AXI_ACLK), // should be same as clkb, 1 bit
   .dina(S_AXI_WDATA), // data input to be written into memory through port A, 32 bits
   .douta(axi_rdata), // data output from read operations through port A, 32 bits
-  .ena(1'b1), // enables read, wrtie, and reset operations through port A, 1 bit
+  .ena(1'b1), // enables read, wrtie, and reset operations through port A, 1 bit                      // maybe change this to ren
   .wea(strobe), // enables write operations through port A, 4 bits
 // color mapper
   .addrb(reg_index), // addresses the memory space for port B Read and write operations, 11 bits

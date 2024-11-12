@@ -64,7 +64,8 @@ module hdmi_text_controller_v1_0 #
     assign reset_ah = ~axi_aresetn;
     assign Clk = axi_aclk;
 
-    logic [31:0] control_register;
+    // logic [31:0] control_register;
+    logic [31:0] palette_registers[8];
     logic [31:0] out_register;
     logic [10:0] register_index;
 
@@ -96,7 +97,8 @@ hdmi_text_controller_v1_0_AXI # (
     .S_AXI_RREADY(axi_rready),
 
     // .slv(VGA_RAM)
-    .ctrl_reg(control_register),
+    // .ctrl_reg(control_register),
+    .color_palatte(palette_registers),
     .out_reg(out_register),
     .reg_index(register_index)
 );
@@ -159,9 +161,10 @@ hdmi_text_controller_v1_0_AXI # (
     color_mapper color_instance(
         .DrawX(drawX),
         .DrawY(drawY),
-        .control_reg(control_register),
-        .register(out_register),
+        // .control_reg(control_register),
         .cur_reg(register_index),
+        .color_palatte(palette_registers),
+        .register(out_register),
         .Red(red),
         .Green(green),
         .Blue(blue)
