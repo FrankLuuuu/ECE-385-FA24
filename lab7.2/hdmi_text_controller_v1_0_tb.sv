@@ -228,22 +228,22 @@ module hdmi_text_controller_tb();
     //Note the read handshake process is simpler than the write
     task axi_read (input logic [31:0] addr, output logic [31:0] data);
         begin
-            read_addr <= addr;
-            read_addr_valid <= 1'b1;
-            read_data_ready <= 1'b1;
+            read_addr <= addr;          // put the address on the Read Address channel
+            read_addr_valid <= 1'b1;    // assert ARVALID
+            read_data_ready <= 1'b1;    // asset RREADY
             
-            wait(read_addr_ready);
-            
-            @(posedge aclk);
-            read_addr_valid <= 1'b0;
-            read_addr_ready <= 1'b0;
-            
-            wait(read_data_valid);
+            wait(read_addr_ready);      // wait for slave to assert ARREADY
             
             @(posedge aclk);
-            data <= read_data;
-            read_data_ready <= 1'b0;
-            read_data_valid <= 1'b0;
+            read_addr_valid <= 1'b0;    // de-assert ARVALID
+            read_addr_ready <= 1'b0;    // de-assert ARREADY
+            
+            wait(read_data_valid);      // wait for slave to put the requested data on the Read Data channel and assert RVALID
+            
+            @(posedge aclk);
+            data <= read_data;          // read from the Read Data channel
+            read_data_ready <= 1'b0;    // de-assert RREADY
+            read_data_valid <= 1'b0;    // de-assert RVALID
         end
     endtask;
   
