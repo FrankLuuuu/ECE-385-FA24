@@ -254,35 +254,74 @@ module hdmi_text_controller_tb();
         repeat (4) @(posedge aclk);
         arstn <= 1;
         
-        //remember AXI addresses are BYTE addresses!
-        //This writes something into the Control Register so that we're not simulating a black screen
-        repeat (4) @(posedge aclk) axi_write((600*4), 32'h001F6000); //write control reg to set foreground and background
+        // //remember AXI addresses are BYTE addresses!
+        // //This writes something into the Control Register so that we're not simulating a black screen
+        // repeat (4) @(posedge aclk) axi_write((600*4), 32'h001F6000); //write control reg to set foreground and background
         
-        //Write into every one of the 600 VRAM registers, note that this is different than what the driver C code does
-        //because the testbench axi_write task only generates aligned (full 32-bit) AXI writes (e.g. write_strb is always F)
-        //The C code on the MicroBlaze expects to be able to do byte and halfword (16-bit) writes, therefore if the
-        //simulation works but the checksum does not pass in the hardware, check handling of write_strb. 
-        for(i=0; i < 600; i++) begin 
-		  repeat (4) @(posedge aclk) axi_write(4*i, i);
-        end
+        // //Write into every one of the 600 VRAM registers, note that this is different than what the driver C code does
+        // //because the testbench axi_write task only generates aligned (full 32-bit) AXI writes (e.g. write_strb is always F)
+        // //The C code on the MicroBlaze expects to be able to do byte and halfword (16-bit) writes, therefore if the
+        // //simulation works but the checksum does not pass in the hardware, check handling of write_strb. 
+        // for(i=0; i < 600; i++) begin 
+		//   repeat (4) @(posedge aclk) axi_write(4*i, i);
+        // end
         
-        //The following is the readback routine. It tests that your AXI IP is capable of reading back all 601
-        //VRAM registers via AXI (once you've properly filled in axi_read as above). Note that the verification
-        //of the readback results is automatic, it will throw an assertion if the readback result is not as expected        
-        for(i=0; i < 600; i++) begin 
-		  repeat (4) @(posedge aclk) axi_read(4*i, tb_read);
-		  axi_read_assert:assert (tb_read == i) else $error ("AXI readback mismatch at address %x. Expected: %x. Actual:%x.", i, i, tb_read);
-        end
+        // //The following is the readback routine. It tests that your AXI IP is capable of reading back all 601
+        // //VRAM registers via AXI (once you've properly filled in axi_read as above). Note that the verification
+        // //of the readback results is automatic, it will throw an assertion if the readback result is not as expected        
+        // for(i=0; i < 600; i++) begin 
+		//   repeat (4) @(posedge aclk) axi_read(4*i, tb_read);
+		//   axi_read_assert:assert (tb_read == i) else $error ("AXI readback mismatch at address %x. Expected: %x. Actual:%x.", i, i, tb_read);
+        // end
         
-        repeat (4) @(posedge aclk) axi_read(600*4, tb_read);
-        $info ("Read back of control register: %x", tb_read);
+        // repeat (4) @(posedge aclk) axi_read(600*4, tb_read);
+        // $info ("Read back of control register: %x", tb_read);
+
+        // Define color palette
+        // Assume palette base address is at 0x800; each color is a 32-bit entry.
+        repeat (4) @(posedge aclk) axi_write(0x800, 32'h00000000); // Black background (index 0)
+        repeat (4) @(posedge aclk) axi_write(0x804, 32'h000000F0); // Blue for "yuzhelu2" and "kyt3" (index 1)
+        repeat (4) @(posedge aclk) axi_write(0x808, 32'h0000F000); // Green for "ECE385!!" (index 2)
+        repeat (4) @(posedge aclk) axi_write(0x80C, 32'h00FFFFFF); // White for other text (index 3)
+
+        // Write "yuzhelu2" in blue (index 1)
+        repeat (4) @(posedge aclk) axi_write(0x0000, {8'd121, 8'd1}); // 'y'
+        repeat (4) @(posedge aclk) axi_write(0x0004, {8'd117, 8'd1}); // 'u'
+        repeat (4) @(posedge aclk) axi_write(0x0008, {8'd122, 8'd1}); // 'z'
+        repeat (4) @(posedge aclk) axi_write(0x000C, {8'd104, 8'd1}); // 'h'
+        repeat (4) @(posedge aclk) axi_write(0x0010, {8'd101, 8'd1}); // 'e'
+        repeat (4) @(posedge aclk) axi_write(0x0014, {8'd108, 8'd1}); // 'l'
+        repeat (4) @(posedge aclk) axi_write(0x0018, {8'd117, 8'd1}); // 'u'
+        repeat (4) @(posedge aclk) axi_write(0x001C, {8'd50, 8'd1});  // '2'
+
+        // Write "kyt3" in blue (index 1)
+        repeat (4) @(posedge aclk) axi_write(0x0020, {8'd107, 8'd1}); // 'k'
+        repeat (4) @(posedge aclk) axi_write(0x0024, {8'd121, 8'd1}); // 'y'
+        repeat (4) @(posedge aclk) axi_write(0x0028, {8'd116, 8'd1}); // 't'
+        repeat (4) @(posedge aclk) axi_write(0x002C, {8'd51, 8'd1});  // '3'
+
+        // Write "ECE385!!" in green (index 2)
+        repeat (4) @(posedge aclk) axi_write(0x0030, {8'd69, 8'd2});  // 'E'
+        repeat (4) @(posedge aclk) axi_write(0x0034, {8'd67, 8'd2});  // 'C'
+        repeat (4) @(posedge aclk) axi_write(0x0038, {8'd69, 8'd2});  // 'E'
+        repeat (4) @(posedge aclk) axi_write(0x003C, {8'd51, 8'd2});  // '3'
+        repeat (4) @(posedge aclk) axi_write(0x0040, {8'd56, 8'd2});  // '8'
+        repeat (4) @(posedge aclk) axi_write(0x0044, {8'd53, 8'd2});  // '5'
+        repeat (4) @(posedge aclk) axi_write(0x0048, {8'd33, 8'd2});  // '!'
+        repeat (4) @(posedge aclk) axi_write(0x004C, {8'd33, 8'd2});  // '!'
+
+        // Background and remaining characters
+        // (More entries can be added here if needed)
+
+        // Ensure the screen has time to render by simulating for a short time
+        #1000;
         
         //Make sure you've set the simulation settings to run to 'all', rather than the 1000ns default
 		
 		//Simulate until VS goes low (indicating a new frame) and write the results
 		`ifdef SIM_VIDEO
 		wait (~pixel_vs);
-		save_bmp ("lab7_1_sim.bmp");
+		save_bmp ("lab7_2_sim.bmp");
 		`endif
 		$finish();
 	end
