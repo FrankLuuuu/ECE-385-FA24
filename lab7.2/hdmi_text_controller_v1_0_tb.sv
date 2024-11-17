@@ -280,38 +280,38 @@ module hdmi_text_controller_tb();
         // Define color palette with corrected RGB values
         // Each 32-bit entry holds two colors.
         // RGB values: Blue (0, 0, F), Green (0, F, 0), White (F, F, F)
-        repeat (4) @(posedge aclk) axi_write(0x800, 32'h00000F00); // Black background (index 0) and Blue (index 1)
-        repeat (4) @(posedge aclk) axi_write(0x804, 32'h0FF000FF); // Green (index 2) and White (index 3)
+        repeat (4) @(posedge aclk) axi_write(32'h2000, 32'h0F0F0000); // Black background (index 0) and Blue (index 1)
+        repeat (4) @(posedge aclk) axi_write(32'h2004, 32'h0FFF00F0); // Green (index 2) and White (index 3)
 
         // Write "yuzhelu2" in blue (foreground index 1), black background (index 0)
-        repeat (4) @(posedge aclk) axi_write(0x0000, {1'b0, 8'd121, 4'd1, 4'd0, 1'b0, 8'd117, 4'd1, 4'd0}); // 'y' 'u'
-        repeat (4) @(posedge aclk) axi_write(0x0004, {1'b0, 8'd122, 4'd1, 4'd0, 1'b0, 8'd104, 4'd1, 4'd0}); // 'z' 'h'
-        repeat (4) @(posedge aclk) axi_write(0x0008, {1'b0, 8'd101, 4'd1, 4'd0, 1'b0, 8'd108, 4'd1, 4'd0}); // 'e' 'l'
-        repeat (4) @(posedge aclk) axi_write(0x000C, {1'b0, 8'd117, 4'd1, 4'd0, 1'b0, 8'd50, 4'd1, 4'd0});  // 'u' '2'
+        repeat (4) @(posedge aclk) axi_write(32'h0000, {1'b0, 7'd121, 4'd1, 4'd0, 1'b0, 7'd117, 4'd1, 4'd0}); // 'y' 'u'
+        repeat (4) @(posedge aclk) axi_write(32'h0004, {1'b0, 7'd122, 4'd1, 4'd0, 1'b0, 7'd104, 4'd1, 4'd0}); // 'z' 'h'
+        repeat (4) @(posedge aclk) axi_write(32'h0008, {1'b0, 7'd101, 4'd1, 4'd0, 1'b0, 7'd108, 4'd1, 4'd0}); // 'e' 'l'
+        repeat (4) @(posedge aclk) axi_write(32'h000C, {1'b0, 7'd117, 4'd1, 4'd0, 1'b0, 7'd50, 4'd1, 4'd0});  // 'u' '2'
 
         // Add a space and "and" in white (foreground index 3), black background (index 0)
-        repeat (4) @(posedge aclk) axi_write(0x0010, {1'b0, 8'd32, 4'd0, 4'd0, 1'b0, 8'd97, 4'd3, 4'd0});   // ' ' 'a'
-        repeat (4) @(posedge aclk) axi_write(0x0014, {1'b0, 8'd110, 4'd3, 4'd0, 1'b0, 8'd100, 4'd3, 4'd0}); // 'n' 'd'
+        repeat (4) @(posedge aclk) axi_write(32'h0010, {1'b0, 7'd32, 4'd0, 4'd0, 1'b0, 7'd97, 4'd3, 4'd0});   // ' ' 'a'
+        repeat (4) @(posedge aclk) axi_write(32'h0014, {1'b0, 7'd110, 4'd3, 4'd0, 1'b0, 7'd100, 4'd3, 4'd0}); // 'n' 'd'
 
         // Add a space between "and" and "kyt3"
-        repeat (4) @(posedge aclk) axi_write(0x0018, {1'b0, 8'd32, 4'd0, 4'd0, 1'b0, 8'd107, 4'd1, 4'd0});  // ' ' 'k'
+        repeat (4) @(posedge aclk) axi_write(32'h0018, {1'b0, 7'd32, 4'd0, 4'd0, 1'b0, 7'd107, 4'd1, 4'd0});  // ' ' 'k'
 
         // "kyt3" in blue (foreground index 1), black background (index 0)
-        repeat (4) @(posedge aclk) axi_write(0x001C, {1'b0, 8'd121, 4'd1, 4'd0, 1'b0, 8'd116, 4'd1, 4'd0}); // 'y' 't'
-        repeat (4) @(posedge aclk) axi_write(0x0020, {1'b0, 8'd51, 4'd1, 4'd0, 1'b0, 8'd32, 4'd0, 4'd0});   // '3' ' '
+        repeat (4) @(posedge aclk) axi_write(32'h001C, {1'b0, 7'd121, 4'd1, 4'd0, 1'b0, 7'd116, 4'd1, 4'd0}); // 'y' 't'
+        repeat (4) @(posedge aclk) axi_write(32'h0020, {1'b0, 7'd51, 4'd1, 4'd0, 1'b0, 7'd32, 4'd0, 4'd0});   // '3' ' '
 
         // Write "completed" in white (foreground index 3), black background (index 0)
-        repeat (4) @(posedge aclk) axi_write(0x0024, {1'b0, 8'd99, 4'd3, 4'd0, 1'b0, 8'd111, 4'd3, 4'd0}); // 'c' 'o'
-        repeat (4) @(posedge aclk) axi_write(0x0028, {1'b0, 8'd109, 4'd3, 4'd0, 1'b0, 8'd112, 4'd3, 4'd0}); // 'm' 'p'
-        repeat (4) @(posedge aclk) axi_write(0x002C, {1'b0, 8'd108, 4'd3, 4'd0, 1'b0, 8'd101, 4'd3, 4'd0}); // 'l' 'e'
-        repeat (4) @(posedge aclk) axi_write(0x0030, {1'b0, 8'd116, 4'd3, 4'd0, 1'b0, 8'd101, 4'd3, 4'd0}); // 't' 'e'
-        repeat (4) @(posedge aclk) axi_write(0x0034, {1'b0, 8'd100, 4'd3, 4'd0, 1'b0, 8'd32, 4'd0, 4'd0});  // 'd' ' '
+        repeat (4) @(posedge aclk) axi_write(32'h0024, {1'b0, 7'd99, 4'd3, 4'd0, 1'b0, 7'd111, 4'd3, 4'd0}); // 'c' 'o'
+        repeat (4) @(posedge aclk) axi_write(32'h0028, {1'b0, 7'd109, 4'd3, 4'd0, 1'b0, 7'd112, 4'd3, 4'd0}); // 'm' 'p'
+        repeat (4) @(posedge aclk) axi_write(32'h002C, {1'b0, 7'd108, 4'd3, 4'd0, 1'b0, 7'd101, 4'd3, 4'd0}); // 'l' 'e'
+        repeat (4) @(posedge aclk) axi_write(32'h0030, {1'b0, 7'd116, 4'd3, 4'd0, 1'b0, 7'd101, 4'd3, 4'd0}); // 't' 'e'
+        repeat (4) @(posedge aclk) axi_write(32'h0034, {1'b0, 7'd100, 4'd3, 4'd0, 1'b0, 7'd32, 4'd0, 4'd0});  // 'd' ' '
 
         // Write "ECE385!!" in green (foreground index 2), black background (index 0)
-        repeat (4) @(posedge aclk) axi_write(0x0038, {1'b0, 8'd69, 4'd2, 4'd0, 1'b0, 8'd67, 4'd2, 4'd0});   // 'E' 'C'
-        repeat (4) @(posedge aclk) axi_write(0x003C, {1'b0, 8'd69, 4'd2, 4'd0, 1'b0, 8'd51, 4'd2, 4'd0});   // 'E' '3'
-        repeat (4) @(posedge aclk) axi_write(0x0040, {1'b0, 8'd56, 4'd2, 4'd0, 1'b0, 8'd53, 4'd2, 4'd0});   // '8' '5'
-        repeat (4) @(posedge aclk) axi_write(0x0044, {1'b0, 8'd33, 4'd2, 4'd0, 1'b0, 8'd33, 4'd2, 4'd0});   // '!' '!'
+        repeat (4) @(posedge aclk) axi_write(32'h0038, {1'b0, 7'd69, 4'd2, 4'd0, 1'b0, 7'd67, 4'd2, 4'd0});   // 'E' 'C'
+        repeat (4) @(posedge aclk) axi_write(32'h003C, {1'b0, 7'd69, 4'd2, 4'd0, 1'b0, 7'd51, 4'd2, 4'd0});   // 'E' '3'
+        repeat (4) @(posedge aclk) axi_write(32'h0040, {1'b0, 7'd56, 4'd2, 4'd0, 1'b0, 7'd53, 4'd2, 4'd0});   // '8' '5'
+        repeat (4) @(posedge aclk) axi_write(32'h0044, {1'b0, 7'd33, 4'd2, 4'd0, 1'b0, 7'd33, 4'd2, 4'd0});   // '!' '!'
 
         // Ensure the screen has time to render by simulating for a short time
         #1000;
