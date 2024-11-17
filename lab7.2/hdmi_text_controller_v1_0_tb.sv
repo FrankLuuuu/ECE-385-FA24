@@ -277,41 +277,41 @@ module hdmi_text_controller_tb();
         // repeat (4) @(posedge aclk) axi_read(600*4, tb_read);
         // $info ("Read back of control register: %x", tb_read);
 
-        // Define color palette
-        // Assume palette base address is at 0x800; each color is a 32-bit entry.
-        repeat (4) @(posedge aclk) axi_write(0x800, 32'h00000000); // Black background (index 0)
-        repeat (4) @(posedge aclk) axi_write(0x804, 32'h000000F0); // Blue for "yuzhelu2" and "kyt3" (index 1)
-        repeat (4) @(posedge aclk) axi_write(0x808, 32'h0000F000); // Green for "ECE385!!" (index 2)
-        repeat (4) @(posedge aclk) axi_write(0x80C, 32'h00FFFFFF); // White for other text (index 3)
+        // Define color palette with corrected RGB values
+        // Each 32-bit entry holds two colors.
+        // RGB values: Blue (0, 0, F), Green (0, F, 0), White (F, F, F)
+        repeat (4) @(posedge aclk) axi_write(0x800, 32'h00000F00); // Black background (index 0) and Blue (index 1)
+        repeat (4) @(posedge aclk) axi_write(0x804, 32'h0FF000FF); // Green (index 2) and White (index 3)
 
-        // Write "yuzhelu2" in blue (index 1)
-        repeat (4) @(posedge aclk) axi_write(0x0000, {8'd121, 8'd1}); // 'y'
-        repeat (4) @(posedge aclk) axi_write(0x0004, {8'd117, 8'd1}); // 'u'
-        repeat (4) @(posedge aclk) axi_write(0x0008, {8'd122, 8'd1}); // 'z'
-        repeat (4) @(posedge aclk) axi_write(0x000C, {8'd104, 8'd1}); // 'h'
-        repeat (4) @(posedge aclk) axi_write(0x0010, {8'd101, 8'd1}); // 'e'
-        repeat (4) @(posedge aclk) axi_write(0x0014, {8'd108, 8'd1}); // 'l'
-        repeat (4) @(posedge aclk) axi_write(0x0018, {8'd117, 8'd1}); // 'u'
-        repeat (4) @(posedge aclk) axi_write(0x001C, {8'd50, 8'd1});  // '2'
+        // Write "yuzhelu2" in blue (foreground index 1), black background (index 0)
+        repeat (4) @(posedge aclk) axi_write(0x0000, {1'b0, 8'd121, 4'd1, 4'd0, 1'b0, 8'd117, 4'd1, 4'd0}); // 'y' 'u'
+        repeat (4) @(posedge aclk) axi_write(0x0004, {1'b0, 8'd122, 4'd1, 4'd0, 1'b0, 8'd104, 4'd1, 4'd0}); // 'z' 'h'
+        repeat (4) @(posedge aclk) axi_write(0x0008, {1'b0, 8'd101, 4'd1, 4'd0, 1'b0, 8'd108, 4'd1, 4'd0}); // 'e' 'l'
+        repeat (4) @(posedge aclk) axi_write(0x000C, {1'b0, 8'd117, 4'd1, 4'd0, 1'b0, 8'd50, 4'd1, 4'd0});  // 'u' '2'
 
-        // Write "kyt3" in blue (index 1)
-        repeat (4) @(posedge aclk) axi_write(0x0020, {8'd107, 8'd1}); // 'k'
-        repeat (4) @(posedge aclk) axi_write(0x0024, {8'd121, 8'd1}); // 'y'
-        repeat (4) @(posedge aclk) axi_write(0x0028, {8'd116, 8'd1}); // 't'
-        repeat (4) @(posedge aclk) axi_write(0x002C, {8'd51, 8'd1});  // '3'
+        // Add a space and "and" in white (foreground index 3), black background (index 0)
+        repeat (4) @(posedge aclk) axi_write(0x0010, {1'b0, 8'd32, 4'd0, 4'd0, 1'b0, 8'd97, 4'd3, 4'd0});   // ' ' 'a'
+        repeat (4) @(posedge aclk) axi_write(0x0014, {1'b0, 8'd110, 4'd3, 4'd0, 1'b0, 8'd100, 4'd3, 4'd0}); // 'n' 'd'
 
-        // Write "ECE385!!" in green (index 2)
-        repeat (4) @(posedge aclk) axi_write(0x0030, {8'd69, 8'd2});  // 'E'
-        repeat (4) @(posedge aclk) axi_write(0x0034, {8'd67, 8'd2});  // 'C'
-        repeat (4) @(posedge aclk) axi_write(0x0038, {8'd69, 8'd2});  // 'E'
-        repeat (4) @(posedge aclk) axi_write(0x003C, {8'd51, 8'd2});  // '3'
-        repeat (4) @(posedge aclk) axi_write(0x0040, {8'd56, 8'd2});  // '8'
-        repeat (4) @(posedge aclk) axi_write(0x0044, {8'd53, 8'd2});  // '5'
-        repeat (4) @(posedge aclk) axi_write(0x0048, {8'd33, 8'd2});  // '!'
-        repeat (4) @(posedge aclk) axi_write(0x004C, {8'd33, 8'd2});  // '!'
+        // Add a space between "and" and "kyt3"
+        repeat (4) @(posedge aclk) axi_write(0x0018, {1'b0, 8'd32, 4'd0, 4'd0, 1'b0, 8'd107, 4'd1, 4'd0});  // ' ' 'k'
 
-        // Background and remaining characters
-        // (More entries can be added here if needed)
+        // "kyt3" in blue (foreground index 1), black background (index 0)
+        repeat (4) @(posedge aclk) axi_write(0x001C, {1'b0, 8'd121, 4'd1, 4'd0, 1'b0, 8'd116, 4'd1, 4'd0}); // 'y' 't'
+        repeat (4) @(posedge aclk) axi_write(0x0020, {1'b0, 8'd51, 4'd1, 4'd0, 1'b0, 8'd32, 4'd0, 4'd0});   // '3' ' '
+
+        // Write "completed" in white (foreground index 3), black background (index 0)
+        repeat (4) @(posedge aclk) axi_write(0x0024, {1'b0, 8'd99, 4'd3, 4'd0, 1'b0, 8'd111, 4'd3, 4'd0}); // 'c' 'o'
+        repeat (4) @(posedge aclk) axi_write(0x0028, {1'b0, 8'd109, 4'd3, 4'd0, 1'b0, 8'd112, 4'd3, 4'd0}); // 'm' 'p'
+        repeat (4) @(posedge aclk) axi_write(0x002C, {1'b0, 8'd108, 4'd3, 4'd0, 1'b0, 8'd101, 4'd3, 4'd0}); // 'l' 'e'
+        repeat (4) @(posedge aclk) axi_write(0x0030, {1'b0, 8'd116, 4'd3, 4'd0, 1'b0, 8'd101, 4'd3, 4'd0}); // 't' 'e'
+        repeat (4) @(posedge aclk) axi_write(0x0034, {1'b0, 8'd100, 4'd3, 4'd0, 1'b0, 8'd32, 4'd0, 4'd0});  // 'd' ' '
+
+        // Write "ECE385!!" in green (foreground index 2), black background (index 0)
+        repeat (4) @(posedge aclk) axi_write(0x0038, {1'b0, 8'd69, 4'd2, 4'd0, 1'b0, 8'd67, 4'd2, 4'd0});   // 'E' 'C'
+        repeat (4) @(posedge aclk) axi_write(0x003C, {1'b0, 8'd69, 4'd2, 4'd0, 1'b0, 8'd51, 4'd2, 4'd0});   // 'E' '3'
+        repeat (4) @(posedge aclk) axi_write(0x0040, {1'b0, 8'd56, 4'd2, 4'd0, 1'b0, 8'd53, 4'd2, 4'd0});   // '8' '5'
+        repeat (4) @(posedge aclk) axi_write(0x0044, {1'b0, 8'd33, 4'd2, 4'd0, 1'b0, 8'd33, 4'd2, 4'd0});   // '!' '!'
 
         // Ensure the screen has time to render by simulating for a short time
         #1000;
