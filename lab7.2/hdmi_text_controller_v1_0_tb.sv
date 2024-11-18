@@ -280,7 +280,7 @@ module hdmi_text_controller_tb();
         // Define color palette with corrected RGB values
         // Each 32-bit entry holds two colors.
         // RGB values: Blue (0, 0, F), Green (0, F, 0), White (F, F, F)
-        repeat (4) @(posedge aclk) axi_write(32'h2000, 32'h0F0F0000); // Black background (index 0) and Blue (index 1)
+        repeat (4) @(posedge aclk) axi_write(32'h2000, 32'h0F000000); // Black background (index 0) and Blue (index 1)
         repeat (4) @(posedge aclk) axi_write(32'h2004, 32'h0FFF00F0); // Green (index 2) and White (index 3)
 
         // Write "yuzhelu2" in blue (foreground index 1), black background (index 0)
