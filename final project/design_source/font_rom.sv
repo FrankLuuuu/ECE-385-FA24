@@ -1,4 +1,5 @@
 module font_rom ( input [10:0]	addr,
+                        //1024      512      256   128     64      32      16      8       4       2
 				  output [7:0]	data
 					 );
 

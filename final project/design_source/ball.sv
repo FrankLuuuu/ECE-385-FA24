@@ -15,19 +15,71 @@
 //-------------------------------------------------------------------------
 
 
-module  ball 
-( 
+// module  ball 
+// ( 
+//     input  logic        Reset, 
+//     input  logic        frame_clk,
+//     input  logic [7:0]  keycode,
+
+//     output logic [9:0]  BallX, 
+//     output logic [9:0]  BallY, 
+//     output logic [9:0]  BallS 
+// );
+
+
+//this module determines the MOVEMENT of the sprite / block only
+//  color will still be determined in the color mapper file
+module block(
+    //for timing reset and keyboard input
     input  logic        Reset, 
     input  logic        frame_clk,
     input  logic [7:0]  keycode,
 
-    output logic [9:0]  BallX, 
-    output logic [9:0]  BallY, 
-    output logic [9:0]  BallS 
+    //this is used to determine the current sprite (block)
+    input  logic [2:0]  block_index,
+    input  logic [1:0]  rotate,
+    input  logic [11:0] grid,
+
+    //
+    output logic [9:0]  BlockX, 
+    output logic [9:0]  BlockY, 
 );
     
+    //colors:
+    //https://studio.code.org/projects/applab/qiyLvNCBDuOYbaBB8oe0isTwNDYTOeGA5cpWlhHNTzM
+    //referred to types.sv from lab5.2
+    typedef enum logic [2:0] {
+        //where color is stored as 4 bits/color red, green, blue
+        i_block_color = 12'h55f,         //i block, light blue 
+        j_block_color = 12'h00a,         //j block, blue
+        j_block_color = 12'hf72,         //l block, orange
+        square_color  = 12'hff5,         //square,  yellow
+        s_block_color = 12'h0a0,         //s blcok, green
+        t_block_color = 12'ha0c,         //t block, purple
+        z_block_color = 12'ha00,         //z blcok, red
+        bckgnd_color  = 12'h005
+    } block_color_t;
 
-	 
+    //keycodes:
+    typedef enum logic [] {
+        //this is where i store the keycodes for readability
+        move_left  = 8'h1A,     //W, up
+        move_right = 8'h16,     //S, down  
+        move_down  = 8'h04,     //A, left
+        rotate     = 8'h07,     //D, right
+        //add more codes for the pause (p), continue (c)
+        // pause      = 
+    }
+
+
+    //find out if variables reset or if the value is the same even as things change
+    //  aka, does the value of rotate get reset each time?
+	// 
+
+    parameter [9:0] grid[20];
+    parameter [9:0] 
+
+
     parameter [9:0] Ball_X_Center=320;  // Center position on the X axis
     parameter [9:0] Ball_Y_Center=240;  // Center position on the Y axis
     parameter [9:0] Ball_X_Min=0;       // Leftmost point on the X axis
@@ -45,6 +97,8 @@ module  ball
     logic [9:0] Ball_X_next;
     logic [9:0] Ball_Y_next;
 
+    //i think this sets to always in motion, how to set to move once and only once?
+    //instead of motion, make place position
     always_comb begin
         Ball_Y_Motion_next = Ball_Y_Motion; // set default motion to be same as prev clock cycle 
         Ball_X_Motion_next = Ball_X_Motion;

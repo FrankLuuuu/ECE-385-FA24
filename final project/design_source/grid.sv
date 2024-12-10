@@ -9,7 +9,7 @@
 //-------------------------------------------------------------------------
 
 
-module  Grid 
+module  grid 
 ( 
     input  logic [3:0]  block[4],       //instantiate the whole block 
     input  logic        frame_clk,

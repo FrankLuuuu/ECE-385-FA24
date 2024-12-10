@@ -14,9 +14,24 @@
 //-------------------------------------------------------------------------
 
 
-module  color_mapper ( input  logic [9:0] BallX, BallY, DrawX, DrawY, Ball_size,
-                       output logic [3:0]  Red, Green, Blue );
+// module  color_mapper ( input  logic [9:0] BallX, BallY, DrawX, DrawY, Ball_size,     location of the ballcenter and the radius
+//                        output logic [3:0]  Red, Green, Blue );
     
+// module  color_mapper (  input logic [9:0] DrawX, DrawY, 
+//                             output logic [10:0] char_index,              // we do not need to pass in all of VRAM, just the specific address?
+                        
+//                         input logic [31:0] color_palatte[8],       //pass color palated 
+//                         input logic [31:0]  character_word,
+//                         // input logic [3:0] fgd, bkg,
+//                         output logic [3:0]  Red, Green, Blue );     // we need access to the color pallate
+    
+
+module  color_mapper ( input  logic [9:0] BlockX, BlockY, DrawX, DrawY, Ball_size,
+
+                       output logic [3:0]  Red, Green, Blue );
+
+        //blockX and blockY are the topleft corner of the block
+        //drawX and drawY are the location of the current pixel being drawn
     logic ball_on;
 	 
  /* Old Ball: Generated square box by checking if the current pixel is within a square of length
@@ -37,6 +52,15 @@ module  color_mapper ( input  logic [9:0] BallX, BallY, DrawX, DrawY, Ball_size,
     assign DistX = DrawX - BallX;
     assign DistY = DrawY - BallY;
     assign Size = Ball_size;
+
+    // block_rom cur_block(
+    //     .addr(),
+    //     .data()
+    // );
+
+    // font_rom da_char( 
+    //     .addr((character * 16) + pixel_row),
+    //     .data(char_pixels_ret));    // get the pixel data
   
     always_comb
     begin:Ball_on_proc
