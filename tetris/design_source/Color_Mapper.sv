@@ -40,7 +40,7 @@ module  color_mapper ( input  logic [9:0]  DrawX, DrawY,
   
     always_comb
     begin:Ball_on_proc
-        if (drawX >= 100 and drawX <= 340) begin
+        if (DrawX >= 100 && DrawX <= 340) begin
             game_on = 1'b1;
         
         end else begin 
