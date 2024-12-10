@@ -14,7 +14,7 @@
 //-------------------------------------------------------------------------
 
 
-module  color_mapper ( input  logic [9:0] BallX, BallY, DrawX, DrawY, Ball_size,
+module  color_mapper ( input  logic [9:0]  DrawX, DrawY,
                        output logic [3:0]  Red, Green, Blue );
     
     logic game_on;
@@ -33,10 +33,10 @@ module  color_mapper ( input  logic [9:0] BallX, BallY, DrawX, DrawY, Ball_size,
      of the 120 available multipliers on the chip!  Since the multiplicants are required to be signed,
 	  we have to first cast them from logic to int (signed by default) before they are multiplied). */
 	  
-    int DistX, DistY, Size;
-    assign DistX = DrawX - BallX;
-    assign DistY = DrawY - BallY;
-    assign Size = Ball_size;
+    // int DistX, DistY, Size;
+    // assign DistX = DrawX - BallX;
+    // assign DistY = DrawY - BallY;
+    // assign Size = Ball_size;
   
     always_comb
     begin:Ball_on_proc
