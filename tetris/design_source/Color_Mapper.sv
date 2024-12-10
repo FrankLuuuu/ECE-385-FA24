@@ -17,7 +17,7 @@
 module  color_mapper ( input  logic [9:0] BallX, BallY, DrawX, DrawY, Ball_size,
                        output logic [3:0]  Red, Green, Blue );
     
-    logic ball_on;
+    logic game_on;
 	 
  /* Old Ball: Generated square box by checking if the current pixel is within a square of length
     2*BallS, centered at (BallX, BallY).  Note that this requires unsigned comparisons.
@@ -40,23 +40,33 @@ module  color_mapper ( input  logic [9:0] BallX, BallY, DrawX, DrawY, Ball_size,
   
     always_comb
     begin:Ball_on_proc
-        if ( (DistX*DistX + DistY*DistY) <= (Size * Size) )
-            ball_on = 1'b1;
-        else 
-            ball_on = 1'b0;
-     end 
+        if (drawX >= 100 and drawX <= 340) begin
+            game_on = 1'b1;
+        
+        end else begin 
+            game_on = 1'b0;
+        end
+        // if ( (DistX*DistX + DistY*DistY) <= (Size * Size) )
+        //     ball_on = 1'b1;
+        // else 
+        //     ball_on = 1'b0;
+    end 
        
     always_comb
     begin:RGB_Display
-        if ((ball_on == 1'b1)) begin 
-            Red = 4'hf;
-            Green = 4'h7;
-            Blue = 4'h0;
+        if ((game_on == 1'b1)) begin 
+            Red = 4'h0;             //game background
+            Green = 4'h0;
+            Blue = 4'h7;
         end       
         else begin 
-            Red = 4'hf - DrawX[9:6]; 
-            Green = 4'hf - DrawX[9:6];
-            Blue = 4'hf - DrawX[9:6];
+            Red = 4'h1;             //game background
+            Green = 4'h0;
+            Blue = 4'h4;
+            // this does the gradient from lab 6.2
+            // Red = 4'hf - DrawX[9:6]; 
+            // Green = 4'hf - DrawX[9:6];
+            // Blue = 4'hf - DrawX[9:6];
         end      
     end 
     

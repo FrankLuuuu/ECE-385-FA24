@@ -1,20 +1,3 @@
-//-------------------------------------------------------------------------
-//    Ball.sv                                                            --
-//    Viral Mehta                                                        --
-//    Spring 2005                                                        --
-//                                                                       --
-//    Modified by Stephen Kempf     03-01-2006                           --
-//                                  03-12-2007                           --
-//    Translated by Joe Meng        07-07-2013                           --
-//    Modified by Zuofu Cheng       08-19-2023                           --
-//    Modified by Satvik Yellanki   12-17-2023                           --
-//    Fall 2024 Distribution                                             --
-//                                                                       --
-//    For use with ECE 385 USB + HDMI Lab                                --
-//    UIUC ECE Department                                                --
-//-------------------------------------------------------------------------
-
-
 module  ball 
 ( 
     input  logic        Reset, 
