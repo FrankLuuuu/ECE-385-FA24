@@ -59,7 +59,7 @@
 
 // //shorter just for showing the background
 module  background_mapper ( input  logic [9:0]  DrawX, DrawY, 
-                            output logic [3:0]  Red, Green, Blue );
+                            output logic [3:0]  Red, Green, Blue);
     
     // logic game_on;
     
@@ -76,7 +76,7 @@ module  background_mapper ( input  logic [9:0]  DrawX, DrawY,
     assign loc_in_sign_Y = DrawY - tetris_sign_Y;    //real
     
     logic [9:0] loc_in_sign_X_scaled, loc_in_sign_Y_scaled;
-    assign loc_in_sign_X_scaled = loc_in_sign_X / 3 ;   //caled doen
+    assign loc_in_sign_X_scaled = loc_in_sign_X / 3;   //caled doen
     assign loc_in_sign_Y_scaled = loc_in_sign_Y / 3;    //scled down
 
     logic [9:0] color_index;

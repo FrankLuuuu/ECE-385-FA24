@@ -1,11 +1,11 @@
 module tetris_font_rom (        input  [3:0]    address,      //calculate actual needed size of the address basesd on the dimentions
-                                output [59:0]	data    );
+                                output [59:0]	data);
 
 	// where address is the row of the tetris sybol to get, and the data 
         //      returned is the row of pixels
 				
         parameter ADDR_WIDTH = 4;
-	parameter DATA_WIDTH =  60;
+	parameter DATA_WIDTH = 60;
 	// logic [ADDR_WIDTH-1:0] addr_reg;
 	
         // ROM definition
@@ -22,7 +22,9 @@ module tetris_font_rom (        input  [3:0]    address,      //calculate actual
                 60'b000011000001111111000000110000011000001100001100001111111110, // a     **           1000
                 60'b000011000001111111100000110000011000000100001100001111111100, // b     **           1001
         };
+
 	assign data = TETRIS_font[addr];
+
 endmodule  
 
 // 300m pixels left on the rifht signed
@@ -30,13 +32,13 @@ endmodule
 // try x3 first for tetris of 180 w x 48 h
 
 module tetris_font_color (      input  [2:0]    address,      //calculate actual needed size of the address basesd on the dimentions
-                                output [11:0]	color    );
+                                output [11:0]	color);
 
 	// where address is the row of the tetris sybol to get, and the data 
         //      returned is the row of pixels
 				
         parameter ADDR_WIDTH = 3;
-	parameter DATA_WIDTH =  12;
+	parameter DATA_WIDTH = 12;
 	// logic [ADDR_WIDTH-1:0] addr_reg;
 	
         // ROM definition
@@ -49,14 +51,16 @@ module tetris_font_color (      input  [2:0]    address,      //calculate actual
                 12'h0df,        //light blue
                 12'he5f,        //hot pink    
         };
+
 	assign color = TETRIS_color[addr];
+
 endmodule  
 
-module tetris_block_rom (      input [6:0]	addr,
-		        output [3:0]	data[4],   );
+module tetris_block_rom (       input [6:0]	addr,
+		                output [3:0]	data[4]);
 
 	parameter ADDR_WIDTH = 7;
-	parameter DATA_WIDTH =  4;
+	parameter DATA_WIDTH = 4;
 	// logic [ADDR_WIDTH-1:0] addr_reg;                // don'r know if thid is needed/ whar this is for
 
 	// BLOCK definition				
@@ -187,7 +191,9 @@ module tetris_block_rom (      input [6:0]	addr,
                 4'b1000,
                 4'b0000,
         };
+
 	assign data = tetris_block[addr +:4];
+        
 endmodule  
 
 
