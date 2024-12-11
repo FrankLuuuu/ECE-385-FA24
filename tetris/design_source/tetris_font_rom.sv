@@ -43,7 +43,8 @@ module tetris_font_color (      input  [2:0]    addr,      //calculate actual ne
 	
         // ROM definition
         //i can't remember what the addr width is supposed to do				
-	parameter [0:2**ADDR_WIDTH-1][DATA_WIDTH-1:0] TETRIS_color = {
+	// parameter [0:2**ADDR_WIDTH-1][DATA_WIDTH-1:0] TETRIS_color = {
+        parameter [0:5][DATA_WIDTH-1:0] TETRIS_color = {
                 12'hf00,        //red
                 12'hf70,        //orange
                 12'hff0,        //yellow

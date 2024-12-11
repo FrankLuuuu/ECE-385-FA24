@@ -104,27 +104,30 @@ module background_mapper (  input  logic [9:0]  DrawX, DrawY,
             Red = 4'h0;                     //game background
             Green = 4'h0;
             Blue = 4'h7;
+
+            //block boundry logic
+            if (block_boundry_X == 0 || block_boundry_Y == 0) begin
+                Red = 4'h0;                     // aoutline the blocks
+                Green = 4'h2;
+                Blue = 4'hf;
+            end
         end
 
         //game logic here
-
-        //block boundry logic
-        else if (block_boundry_X == 0 || block_boundry_Y == 0) begin
-            Red = 4'h0;                     // aoutline the blocks
-            Green = 4'h2;
-            Blue = 4'hf;
-        end
+       
         //outline the game
         else if (DrawX == 99 || DrawX == 100 || DrawX == 340 || DrawX == 341 || DrawY == 0 || DrawY == 479) begin
             Red = 4'h0;                     // aoutline the game
             Green = 4'h8;
             Blue = 4'hf;
         end
+
         else if ((DrawX >=400 && DrawX <580) && (DrawY >=80 && DrawY < 128) && char_pixels_ret[59-loc_in_sign_X_scaled]) begin 
             Red = color_pixels_ret[11:8];   //tetris sign
             Green = color_pixels_ret[7:4];
             Blue = color_pixels_ret[3:0];
         end  
+        
         else begin 
             Red = 4'h1;                     // background
             Green = 4'h0;
