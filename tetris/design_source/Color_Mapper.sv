@@ -123,13 +123,13 @@ module background_mapper (  input  logic [9:0]  DrawX, DrawY,
         //game logic here
        
         //outline the game
-        else if (DrawX == 99 || DrawX == 100 || DrawX == 340 || DrawX == 341 || DrawY == 0 || DrawY == 479) begin
+        else if (DrawX == 99 || DrawX == 100 || DrawX == 340 || DrawX == 341 || DrawY == 0 || DrawY == 479 || DrawX == 639) begin
             Red = 4'h0;                     // aoutline the game
             Green = 4'h8;
             Blue = 4'hf;
         end
 
-        else if ((DrawX >=400 && DrawX <580) && (DrawY >=80 && DrawY < 128) && char_pixels_ret[59-loc_in_sign_X_scaled]) begin 
+        else if ((DrawX >=400 && DrawX < 580) && (DrawY >=80 && DrawY < 128) && char_pixels_ret[59-loc_in_sign_X_scaled]) begin 
             Red = color_pixels_ret[11:8];   //tetris sign
             Green = color_pixels_ret[7:4];
             Blue = color_pixels_ret[3:0];
