@@ -145,7 +145,7 @@ module mb_usb_hdmi_top(
     );
     
     //Color Mapper Module   
-    color_mapper color_instance(
+    background_mapper color_instance(
         // .BallX(ballxsig),
         // .BallY(ballysig),
         .DrawX(drawX),

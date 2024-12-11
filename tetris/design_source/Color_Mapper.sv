@@ -58,7 +58,7 @@
 
 
 // //shorter just for showing the background
-module  background_mapper ( input  logic [9:0]  DrawX, DrawY, 
+module background_mapper (  input  logic [9:0]  DrawX, DrawY, 
                             output logic [3:0]  Red, Green, Blue);
     
     // logic game_on;
