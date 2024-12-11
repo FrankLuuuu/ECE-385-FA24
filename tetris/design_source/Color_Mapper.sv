@@ -67,7 +67,7 @@ module background_mapper (  input  logic [9:0]  DrawX, DrawY,
     int tetris_sign_X, tetris_sign_Y, score_time_X;
     assign tetris_sign_X = 400; //9'h190;     //400 in dec
     assign tetris_sign_Y = 80;  //9'h50;      //80 in dec
-    assign score_time_X = 400;  //9'h50;      //80 in dec
+    // assign score_time_X = 400;  //9'h50;      //80 in dec
 
     //not entirely sure if this is correct, but i did this to get the row and color but i didn't know how to
     //  call a function in the if statement but i needed the color and row but didn't know how to do an if
@@ -96,7 +96,7 @@ module background_mapper (  input  logic [9:0]  DrawX, DrawY,
 
     //score sign logic
     logic [9:0] loc_in_score_Y;
-    assign loc_in_score_time_X = DrawX - score_time_X;    //real
+    // assign loc_in_score_time_X = DrawX - score_time_X;    //real
     assign loc_in_score_Y = DrawY - 150;    //real
 
     logic [55:0] score_pixels_ret;
@@ -115,6 +115,16 @@ module background_mapper (  input  logic [9:0]  DrawX, DrawY,
         .addr(loc_in_time_Y[3:0]),
         .data(time_pixels_ret));
 
+
+   //next block sign logic
+    logic [9:0] loc_in_next_block_Y;
+    // assign loc_in_time_X = DrawX - tetris_sign_X;    //real
+    assign loc_in_next_block_Y = DrawY - 186;    //real
+
+    logic [95:0] next_block_pixels_ret;
+    next_block_font_rom da_next(
+        .addr(loc_in_next_block_Y[3:0]),
+        .data(next_block_pixels_ret));
 
     //block boundry logic
     int block_boundry_X, block_boundry_Y;
@@ -158,14 +168,20 @@ module background_mapper (  input  logic [9:0]  DrawX, DrawY,
             Blue = color_pixels_ret[3:0];
         end  
 
-        else if ((DrawX >=400 && DrawX < 456) && (DrawY >=150 && DrawY < 160) && score_pixels_ret[55-loc_in_score_time_X]) begin 
+        else if ((DrawX >=400 && DrawX < 456) && (DrawY >=150 && DrawY < 160) && score_pixels_ret[55-loc_in_sign_X]) begin 
             Red = 4'hf;   //Score sign
             Green = 4'hf;
             Blue = 4'hf;
         end  
 
-        else if ((DrawX >=400 && DrawX < 448) && (DrawY >=168 && DrawY < 178) && time_pixels_ret[47-loc_in_score_time_X]) begin 
+        else if ((DrawX >=400 && DrawX < 448) && (DrawY >=168 && DrawY < 178) && time_pixels_ret[47-loc_in_sign_X]) begin 
             Red = 4'hf;   //Time sign
+            Green = 4'hf;
+            Blue = 4'hf;
+        end  
+
+        else if ((DrawX >=400 && DrawX < 496) && (DrawY >=186 && DrawY < 196) && time_pixels_ret[96-loc_in_sign_X]) begin 
+            Red = 4'hf;   //next block sign
             Green = 4'hf;
             Blue = 4'hf;
         end  
