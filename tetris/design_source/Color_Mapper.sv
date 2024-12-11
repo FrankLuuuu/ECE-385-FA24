@@ -131,6 +131,12 @@ module background_mapper (  input  logic [9:0]  DrawX, DrawY,
     assign block_boundry_X = (DrawX - 100) % 24;    //blck size is 24
     assign block_boundry_Y = DrawY % 24;
 
+    //block boundry logic (next block)
+    int block_boundry_X_next, block_boundry_Y_next;
+    assign block_boundry_X_next = (DrawX - 400) % 20;    //blck size is 24
+    assign block_boundry_Y_next = DrawY % 24;
+
+
     always_comb
     begin:Draw_backgrond
         if (DrawX >= 100 && DrawX < 340) begin  
@@ -185,6 +191,25 @@ module background_mapper (  input  logic [9:0]  DrawX, DrawY,
             Green = 4'hf;
             Blue = 4'hf;
         end  
+
+        else if (((DrawX > 400 && DrawX < 520) && (DrawY > 220 && DrawY < 340))) begin
+            if (block_boundry_X_next == 0 || block_boundry_Y_next == 0) begin
+                Red = 4'h0;                     // aoutline the blocks
+                Green = 4'h2;
+                Blue = 4'hf;
+            end
+            else begin
+                Red = 4'h0;                     //game background
+                Green = 4'h0;
+                Blue = 4'h7;
+            end
+        end
+
+        else if (((DrawX == 400 || DrawX == 520) && (DrawY >= 220 && DrawY <= 340)) || (DrawX >= 400 || DrawX <= 520) && (DrawY == 220 || DrawY == 340)) begin
+            Red = 4'h0;                     // aoutline the game
+            Green = 4'h8;
+            Blue = 4'hf;
+        end
 
         else begin 
             Red = 4'h1;                     // background
