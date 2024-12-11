@@ -93,6 +93,28 @@ module background_mapper (  input  logic [9:0]  DrawX, DrawY,
         .color(color_pixels_ret));
 
 
+    //score sign logic
+    logic [9:0] loc_in_score_Y;
+    // assign loc_in_sign_X = DrawX - tetris_sign_X;    //real
+    assign loc_in_score_Y = DrawY - 150;    //real
+
+    logic [55:0] score_pixels_ret;
+    tetris_font_color da_color(
+        .addr(loc_in_score_Y),
+        .color(score_pixels_ret));
+
+
+    //time sign logic
+    logic [9:0] loc_in_time_Y;
+    // assign loc_in_sign_X = DrawX - tetris_sign_X;    //real
+    assign loc_in_time_Y = DrawY - 168;    //real
+
+    logic [47:0] score_pixels_ret;
+    tetris_font_color da_color(
+        .addr(loc_in_time_Y),
+        .color(time_pixels_ret));
+
+
     //block boundry logic
     int block_boundry_X, block_boundry_Y;
     assign block_boundry_X = (DrawX - 100) % 24;    //blck size is 24
@@ -133,6 +155,18 @@ module background_mapper (  input  logic [9:0]  DrawX, DrawY,
             Red = color_pixels_ret[11:8];   //tetris sign
             Green = color_pixels_ret[7:4];
             Blue = color_pixels_ret[3:0];
+        end  
+
+        else if ((DrawX >=400 && DrawX < 456) && (DrawY >=150 && DrawY < 160) && score_pixels_ret[55-loc_in_sign_X]) begin 
+            Red = 4'hf;   //Score sign
+            Green = 4'hf;
+            Blue = 4'hf;
+        end  
+
+        else if ((DrawX >=400 && DrawX < 448) && (DrawY >=168 && DrawY < 178) && time_pixels_ret[47-loc_in_sign_X]) begin 
+            Red = 4'hf;   //Time sign
+            Green = 4'hf;
+            Blue = 4'hf;
         end  
 
         else begin 

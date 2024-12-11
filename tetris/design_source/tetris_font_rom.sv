@@ -57,6 +57,66 @@ module tetris_font_color (      input  [2:0]    addr,      //calculate actual ne
 
 endmodule  
 
+module score_font_rom (        input  [3:0]    addr,      //calculate actual needed size of the address basesd on the dimentions
+                                output [55:0]	data);
+
+	// where address is the row of the tetris sybol to get, and the data 
+        //      returned is the row of pixels
+				
+        parameter ADDR_WIDTH = 4;
+	parameter DATA_WIDTH = 56;
+	// logic [ADDR_WIDTH-1:0] addr_reg;
+	
+        // ROM definition
+        //i can't remember what the addr width is supposed to do				
+	parameter [0:2**ADDR_WIDTH-1][DATA_WIDTH-1:0] score_font = {
+                56'b01111100001111000111110011111100111111100000000000000000, // 2 **********       0000
+                56'b11000110011001101100011001100110011001100000000000000000, // 3 **********       0001
+                56'b11000110110000101100011001100110011000100001100000000000, // 4     **           0010
+                56'b01100000110000001100011001100110011010000001100000000000, // 5     **           0011
+                56'b00111000110000001100011001111100011110000000000000000000, // 6     **           0100
+                56'b00001100110000001100011001101100011010000000000000000000, // 7     **           0101
+                56'b00000110110000001100011001100110011000000000000000000000, // 8     **           0110
+                56'b11000110110000101100011001100110011000100001100000000000, // 9     **           0111
+                56'b11000110011001101100011001100110011001100001100000000000, // a     **           1000
+                56'b01111100001111000111110011100110111111100000000000000000  // b     **           1001
+        };
+
+	assign data = score_font[addr];
+
+endmodule  
+
+module time_font_rom (        input  [3:0]    addr,      //calculate actual needed size of the address basesd on the dimentions
+                                output [47:0]	data);
+
+	// where address is the row of the tetris sybol to get, and the data 
+        //      returned is the row of pixels
+				
+        parameter ADDR_WIDTH = 4;
+	parameter DATA_WIDTH = 48;
+	// logic [ADDR_WIDTH-1:0] addr_reg;
+	
+        // ROM definition
+        //i can't remember what the addr width is supposed to do				
+	parameter [0:2**ADDR_WIDTH-1][DATA_WIDTH-1:0] time_font = {
+                48'b111111110011110011000011111111100000000000000000, // 2 **********       0000
+                48'b110110110001100011100111011001100000000000000000, // 3 **********       0001
+                48'b100110010001100011111111011000100001100000000000, // 4     **           0010
+                48'b000110000001100011111111011010000001100000000000, // 5     **           0011
+                48'b000110000001100011011011011110000000000000000000, // 6     **           0100
+                48'b000110000001100011000011011010000000000000000000, // 7     **           0101
+                48'b000110000001100011000011011000000000000000000000, // 8     **           0110
+                48'b000110000001100011000011011000100001100000000000, // 9     **           0111
+                48'b000110000001100011000011011001100001100000000000, // a     **           1000
+                48'b001111000011110011000011111111100000000000000000  // b     **           1001
+        };
+
+	assign data = time_font[addr];
+
+endmodule   
+
+
+
 //module tetris_block_rom (       input [6:0]	addr,
 //		                output [3:0]	data[4]);
 
