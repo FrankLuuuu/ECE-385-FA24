@@ -111,6 +111,13 @@ module background_mapper (  input  logic [9:0]  DrawX, DrawY,
                 Green = 4'h2;
                 Blue = 4'hf;
             end
+
+            //outline the game
+            if (DrawY == 0 || DrawY == 479) begin
+                Red = 4'h0;                     // aoutline the game
+                Green = 4'h8;
+                Blue = 4'hf;
+            end
         end
 
         //game logic here
@@ -127,7 +134,7 @@ module background_mapper (  input  logic [9:0]  DrawX, DrawY,
             Green = color_pixels_ret[7:4];
             Blue = color_pixels_ret[3:0];
         end  
-        
+
         else begin 
             Red = 4'h1;                     // background
             Green = 4'h0;
