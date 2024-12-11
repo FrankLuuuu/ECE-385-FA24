@@ -147,146 +147,177 @@ endmodule
 
 
 
-//module tetris_block_rom (       input [6:0]	addr,
-//		                output [3:0]	data[4]);
+module tetris_block_rom (       input   [6:0]	addr,
+		                output  [3:0]	data[4]);
 
-//	parameter ADDR_WIDTH = 7;
-//	parameter DATA_WIDTH = 4;
-//	// logic [ADDR_WIDTH-1:0] addr_reg;                // don'r know if thid is needed/ whar this is for
+	parameter ADDR_WIDTH = 7;
+	parameter DATA_WIDTH = 4;
+	// logic [ADDR_WIDTH-1:0] addr_reg;                // don'r know if thid is needed/ whar this is for
 
-//	// BLOCK definition				
-//	parameter [0:2**ADDR_WIDTH-1][DATA_WIDTH-1:0] tetris_block = {
-//                //code 0x0 + rotate
-//                4'b0000,        // sideways i block
-//                4'b1111,
-//                4'b0000,
-//                4'b0000,
-//                4'b0010,        // rotate i block 1
-//                4'b0010,
-//                4'b0010,
-//                4'b0010,
-//                4'b0000,        // rotate i block 2
-//                4'b0000,
-//                4'b1111,
-//                4'b0000,
-//                4'b0100,        // rotate i block 3
-//                4'b0100,
-//                4'b0100,
-//                4'b0100,
+	// BLOCK definition				
+	parameter [0:2**ADDR_WIDTH-1][DATA_WIDTH-1:0] tetris_block = {
+               //code 0x0 + rotate
+               4'b0000,        // sideways i block
+               4'b1111,
+               4'b0000,
+               4'b0000,
+               4'b0010,        // rotate i block 1
+               4'b0010,
+               4'b0010,
+               4'b0010,
+               4'b0000,        // rotate i block 2
+               4'b0000,
+               4'b1111,
+               4'b0000,
+               4'b0100,        // rotate i block 3
+               4'b0100,
+               4'b0100,
+               4'b0100,
 
-//                //code 0x1 + rotate
-//                4'b1000,        // j block
-//                4'b1110,
-//                4'b0000,
-//                4'b0000,
-//                4'b0110,        //rotate j block 1
-//                4'b0100,
-//                4'b0100,
-//                4'b0000,
-//                4'b0000,        //rotate j block 2
-//                4'b1110,
-//                4'b0010,
-//                4'b0000,
-//                4'b0100,        //rotate j block 2
-//                4'b0100,
-//                4'b1100,
-//                4'b0000,
+               //code 0x1 + rotate
+               4'b1000,        // j block
+               4'b1110,
+               4'b0000,
+               4'b0000,
+               4'b0110,        //rotate j block 1
+               4'b0100,
+               4'b0100,
+               4'b0000,
+               4'b0000,        //rotate j block 2
+               4'b1110,
+               4'b0010,
+               4'b0000,
+               4'b0100,        //rotate j block 2
+               4'b0100,
+               4'b1100,
+               4'b0000,
 
-//                //code 0x2 + rotate
-//                4'b0010,        // l block
-//                4'b1110,
-//                4'b0000,
-//                4'b0000,
-//                4'b0100,        //rotate l block 1
-//                4'b0100,
-//                4'b0110,
-//                4'b0000,
-//                4'b0000,        //rotate l block 2
-//                4'b1110,
-//                4'b1000,
-//                4'b0000,
-//                4'b1100,        //rotate l block 3
-//                4'b0100,
-//                4'b0100,
-//                4'b0000,
+               //code 0x2 + rotate
+               4'b0010,        // l block
+               4'b1110,
+               4'b0000,
+               4'b0000,
+               4'b0100,        //rotate l block 1
+               4'b0100,
+               4'b0110,
+               4'b0000,
+               4'b0000,        //rotate l block 2
+               4'b1110,
+               4'b1000,
+               4'b0000,
+               4'b1100,        //rotate l block 3
+               4'b0100,
+               4'b0100,
+               4'b0000,
 
-//                //code 0x3 + rotate
-//                4'b0110,        //square block
-//                4'b0110,
-//                4'b0000,
-//                4'b0000,
-//                4'b0110,        //rotate square block 1
-//                4'b0110,
-//                4'b0000,
-//                4'b0000,
-//                4'b0110,        //rotate square block 2
-//                4'b0110,
-//                4'b0000,
-//                4'b0000,
-//                4'b0110,        //rotate square block 3
-//                4'b0110,
-//                4'b0000,
-//                4'b0000,
+               //code 0x3 + rotate
+               4'b0110,        //square block
+               4'b0110,
+               4'b0000,
+               4'b0000,
+               4'b0110,        //rotate square block 1
+               4'b0110,
+               4'b0000,
+               4'b0000,
+               4'b0110,        //rotate square block 2
+               4'b0110,
+               4'b0000,
+               4'b0000,
+               4'b0110,        //rotate square block 3
+               4'b0110,
+               4'b0000,
+               4'b0000,
 
-//                // code 0x4 + rotate
-//                4'b0110,        // s block
-//                4'b1100,
-//                4'b0000,
-//                4'b0000,
-//                4'b0100,        //rotate s block 1
-//                4'b0110,
-//                4'b0010,
-//                4'b0000,
-//                4'b0000,        //rotate s block 2
-//                4'b0110,
-//                4'b1100,
-//                4'b0000,
-//                4'b1000,        //rotate s block 3
-//                4'b1100,
-//                4'b0100,
-//                4'b0000,
+               // code 0x4 + rotate
+               4'b0110,        // s block
+               4'b1100,
+               4'b0000,
+               4'b0000,
+               4'b0100,        //rotate s block 1
+               4'b0110,
+               4'b0010,
+               4'b0000,
+               4'b0000,        //rotate s block 2
+               4'b0110,
+               4'b1100,
+               4'b0000,
+               4'b1000,        //rotate s block 3
+               4'b1100,
+               4'b0100,
+               4'b0000,
 
-//                //code 0x5 + rotate
-//                4'b0100,        //t block
-//                4'b1110,
-//                4'b0000,
-//                4'b0000,
-//                4'b0100,        //rotate t block 1
-//                4'b0110,
-//                4'b0100,
-//                4'b0000,
-//                4'b0000,        //rotate t block 2
-//                4'b1110,
-//                4'b0100,
-//                4'b0000,
-//                4'b0100,        //rotate t block 3
-//                4'b1100,
-//                4'b0100,
-//                4'b0000,
+               //code 0x5 + rotate
+               4'b0100,        //t block
+               4'b1110,
+               4'b0000,
+               4'b0000,
+               4'b0100,        //rotate t block 1
+               4'b0110,
+               4'b0100,
+               4'b0000,
+               4'b0000,        //rotate t block 2
+               4'b1110,
+               4'b0100,
+               4'b0000,
+               4'b0100,        //rotate t block 3
+               4'b1100,
+               4'b0100,
+               4'b0000,
 
-//                //code 0x6 + rotate
-//                4'b1100,        //z block
-//                4'b0110,
-//                4'b0000,
-//                4'b0000,
-//                4'b0010,        // rotate z block 1
-//                4'b0110,
-//                4'b0100,
-//                4'b0000,
-//                4'b0000,        // rotate z block 2
-//                4'b1100,
-//                4'b0110,
-//                4'b0000,
-//                4'b0100,        // rotate z block 1
-//                4'b1100,
-//                4'b1000,
-//                4'b0000
-//        };
+               //code 0x6 + rotate
+               4'b1100,        //z block
+               4'b0110,
+               4'b0000,
+               4'b0000,
+               4'b0010,        // rotate z block 1
+               4'b0110,
+               4'b0100,
+               4'b0000,
+               4'b0000,        // rotate z block 2
+               4'b1100,
+               4'b0110,
+               4'b0000,
+               4'b0100,        // rotate z block 1
+               4'b1100,
+               4'b1000,
+               4'b0000
+       };
 
-//	assign data = tetris_block[addr +:4];
+	assign data[0] = tetris_block[addr];
+	assign data[1] = tetris_block[addr + 1];
+	assign data[2] = tetris_block[addr + 2];
+	assign data[3] = tetris_block[addr + 3];
         
-//endmodule  
+        
+endmodule  
 
+module tetris_block_color (      input  [2:0]    addr,      //calculate actual needed size of the address basesd on the dimentions
+                                output [11:0]	color);
+
+	// where address is the row of the tetris sybol to get, and the data 
+        //      returned is the row of pixels
+				
+        parameter ADDR_WIDTH = 3;
+	parameter DATA_WIDTH = 12;
+	// logic [ADDR_WIDTH-1:0] addr_reg;
+	
+        // ROM definition
+        //i can't remember what the addr width is supposed to do				
+	// parameter [0:2**ADDR_WIDTH-1][DATA_WIDTH-1:0] TETRIS_color = {
+        parameter [0:2**ADDR_WIDTH-1][DATA_WIDTH-1:0] TETRIS_color = {
+                12'h0df,        //light blue
+                12'hf9a,        //pink
+                12'hf73,        //orange
+                12'hee5,        //yellow
+                12'h7f6,        //green
+                12'hb0f,        //light purple    
+                12'hf55,        //red
+                12'h007         //dark blue (game background for no block)
+        };
+
+	assign color = TETRIS_color[addr];
+
+endmodule  
 
 
 

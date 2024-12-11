@@ -18,7 +18,9 @@ module block
 ( 
     input  logic        Reset, 
     input  logic        frame_clk,
-    input  logic [7:0]  keycode
+    input  logic [7:0]  keycode,
+
+    output logic [2:0]  grid[20][10]
 );
 
     logic [9:0] Ball_X_Motion;
@@ -26,7 +28,17 @@ module block
     logic [9:0] Ball_Y_Motion;
     logic [9:0] Ball_Y_Motion_next;
 
+    integer i, j;
+    localparam GRID_HEIGHT = 20;
+    localparam GRID_WIDTH  = 10;
+    
     always_comb begin
+        
+        for (i = 0; i < GRID_HEIGHT; i++) 
+            for (j = 0; j < GRID_WIDTH; j++) 
+                grid[i][j] <= j % 8;
+
+
         Ball_Y_Motion_next = Ball_Y_Motion; // set default motion to be same as prev clock cycle 
         Ball_X_Motion_next = Ball_X_Motion;
 
@@ -52,7 +64,6 @@ module block
             Ball_X_Motion_next = 10'd1;                     //          1 x right
             Ball_Y_Motion_next = 10'd0;
         end 
-        
 
         // if ( (BallY + BallS) >= Ball_Y_Max )  // Ball is at the bottom edge, BOUNCE!
         // begin

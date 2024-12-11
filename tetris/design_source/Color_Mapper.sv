@@ -58,8 +58,10 @@
 
 
 // //shorter just for showing the background
-module background_mapper (  input  logic [9:0]  DrawX, DrawY, 
-                            output logic [3:0]  Red, Green, Blue);
+module color_mapper (   input logic [9:0]   DrawX, DrawY, 
+                        input logic [2:0]   grid[20][10],
+
+                        output logic [3:0]  Red, Green, Blue);
     
     // logic game_on;
     
@@ -136,26 +138,50 @@ module background_mapper (  input  logic [9:0]  DrawX, DrawY,
     assign block_boundry_X_next = (DrawX - 400) % 30;    //blck size is 24
     assign block_boundry_Y_next = (DrawY - 220) % 30;
 
+    
+    //mach anc logic for the tetris grid
+    //what we need, the block x and y coordinate
+    int tetris_block_x, tetris_block_y;
+    assign tetris_block_x = (DrawX - 100) / 24;
+    assign tetris_block_y = DrawY / 24;
+
+    int block_index;
+    assign block_index = grid[tetris_block_y][tetris_block_x];
+
+    //get the color
+    int block_color_ret;
+    tetris_block_color da_block_color(
+        .addr(block_index),
+        .color(block_color_ret)
+    );
+
+
 
     always_comb
     begin:Draw_backgrond
+        //#TODO: comment out all hardcodin for the game background, it is now in the block color palatee, so if we 
+        //  assign it directly it is hard coding or doing extra work
         if (DrawX >= 100 && DrawX < 340) begin  
-            Red = 4'h0;                     //game background
-            Green = 4'h0;
-            Blue = 4'h7;
-
             //block boundry logic
             if (block_boundry_X == 0 || block_boundry_Y == 0) begin
-                Red = 4'h0;                     // aoutline the blocks
-                Green = 4'h2;
-                Blue = 4'hf;
+                Red     = 4'h0;                     // aoutline the blocks
+                Green   = 4'h2;
+                Blue    = 4'hf;
             end
 
-            //outline the game
-            if (DrawY == 0 || DrawY == 479) begin
-                Red = 4'h0;                     // aoutline the game
-                Green = 4'h8;
-                Blue = 4'hf;
+            //extra, not needed, done by the following block
+            // //outline the game
+            // if (DrawY == 0 || DrawY == 479) begin
+            //     Red = 4'h0;                     // aoutline the game
+            //     Green = 4'h8;
+            //     Blue = 4'hf;
+            // end
+
+            //draw block
+            else begin
+                Red     = block_color_ret[11:8];                     //game background
+                Green   = block_color_ret[7:4];
+                Blue    = block_color_ret[3:0];
             end
         end
 
@@ -199,6 +225,9 @@ module background_mapper (  input  logic [9:0]  DrawX, DrawY,
                 Blue = 4'hf;
             end
             else begin
+                //#TODO: comment out all hardcodin for the game background, it is now in the block color 
+                //  palatee, so if we assign it directly it is hard coding or doing extra work
+                //
                 Red = 4'h0;                     //game background
                 Green = 4'h0;
                 Blue = 4'h7;
