@@ -90,7 +90,7 @@ module background_mapper (  input  logic [9:0]  DrawX, DrawY,
     logic [11:0] color_pixels_ret;
     tetris_font_color da_color(
         .addr(color_index[2:0]),
-        .data(color_pixels_ret));
+        .color(color_pixels_ret));
 
 
     //block boundry logic

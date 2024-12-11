@@ -138,7 +138,7 @@ module mb_usb_hdmi_top(
     ball ball_instance(
         .Reset(reset_ah),
         .frame_clk(vsync),                    //Figure out what this should be so that the ball will move
-        .keycode(keycode0_gpio[7:0]),    //Notice: only one keycode connected to ball by default
+        .keycode(keycode0_gpio[7:0])    //Notice: only one keycode connected to ball by default
         // .BallX(ballxsig),
         // .BallY(ballysig),
         // .BallS(ballsizesig)
