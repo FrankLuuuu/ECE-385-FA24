@@ -21,6 +21,7 @@ module block
     input  logic [7:0]  keycode,
 
     output logic [9:0]  score,
+    output logic        next_block,
     output logic [3:0]  grid[20][10]
 );
 
@@ -59,7 +60,7 @@ module block
 
         x_next = x;
         y_next = y;
-        
+
         id_next = id;
 
         new_block = 0;
@@ -572,6 +573,10 @@ module block
             timer <= timer + 1;
             if (timer > move) begin
                 timer <= 0;
+            end
+
+            if (score_next % 4 == 0 && score_next > 0) begin
+                score_next = score_next + 1;
             end
 
             grid = grid_next;

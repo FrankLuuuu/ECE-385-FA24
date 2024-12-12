@@ -47,6 +47,7 @@ module mb_usb_hdmi_top(
 
     logic [3:0] block_grid[20][10];
     logic [9:0] score;
+    logic       next_block;
 
     logic hsync, vsync, vde;
     logic [3:0] red, green, blue;
@@ -144,6 +145,7 @@ module mb_usb_hdmi_top(
         .keycode(keycode0_gpio[7:0]),    //Notice: only one keycode connected to ball by default
 
         .score(score),
+        .next_block(next_block),
         .grid(block_grid)
     );
     
@@ -152,6 +154,7 @@ module mb_usb_hdmi_top(
         .DrawX(drawX),
         .DrawY(drawY),
 
+        .next_block(next_block),
         .score(score),
         .grid(block_grid),
 
