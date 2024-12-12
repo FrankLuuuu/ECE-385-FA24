@@ -145,13 +145,13 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
     assign tetris_block_x = (DrawX - 100) / 24;
     assign tetris_block_y = DrawY / 24;
 
-    int block_index;
+    logic[3:0] block_index;
     assign block_index = grid[tetris_block_y][tetris_block_x];
 
     //get the color
     int block_color_ret;
     tetris_block_color da_block_color(
-        .addr(block_index),
+        .addr(block_index[2:0]),
         .color(block_color_ret)
     );
 
