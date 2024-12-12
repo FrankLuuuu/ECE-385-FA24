@@ -20,7 +20,8 @@ module block
     input  logic        frame_clk,
     input  logic [7:0]  keycode,
 
-    output logic [2:0]  grid[20][10]
+    output logic [2:0]  grid[20][10],
+    output logic        startscreen
 );
 
     logic [9:0] Ball_X_Motion;
@@ -39,31 +40,36 @@ module block
                 grid[i][j] <= j % 8;
 
 
-        Ball_Y_Motion_next = Ball_Y_Motion; // set default motion to be same as prev clock cycle 
-        Ball_X_Motion_next = Ball_X_Motion;
+        if (keycode == 8'h13) begin
+            startscreen == 0;
+        end
 
-        //modify to control ball motion with the keycode
-        //these are the buttons right? I can't do w or s, so im reolcaing those with b and c
-        if (keycode == 8'h1A) 
-        begin                                               //up        W is 26
-            Ball_Y_Motion_next = -10'd1;                    //          1 y up
-            Ball_X_Motion_next = 10'd0;
-        end 
-        else if (keycode == 8'h16) 
-        begin                                               //down      S is 22
-            Ball_Y_Motion_next = 10'd1;                     //          1 y down
-            Ball_X_Motion_next = 10'd0;
-        end 
-        else if (keycode == 8'h04)  
-        begin                                               //left      A is 4   
-            Ball_X_Motion_next = -10'd1;                    //          1 x left
-            Ball_Y_Motion_next = 10'd0;
-        end 
-        else if (keycode == 8'h07) 
-        begin                                               //right     D is 7
-            Ball_X_Motion_next = 10'd1;                     //          1 x right
-            Ball_Y_Motion_next = 10'd0;
-        end 
+
+        // Ball_Y_Motion_next = Ball_Y_Motion; // set default motion to be same as prev clock cycle 
+        // Ball_X_Motion_next = Ball_X_Motion;
+
+        // //modify to control ball motion with the keycode
+        // //these are the buttons right? I can't do w or s, so im reolcaing those with b and c
+        // if (keycode == 8'h1A) 
+        // begin                                               //up        W is 26
+        //     Ball_Y_Motion_next = -10'd1;                    //          1 y up
+        //     Ball_X_Motion_next = 10'd0;
+        // end 
+        // else if (keycode == 8'h16) 
+        // begin                                               //down      S is 22
+        //     Ball_Y_Motion_next = 10'd1;                     //          1 y down
+        //     Ball_X_Motion_next = 10'd0;
+        // end 
+        // else if (keycode == 8'h04)  
+        // begin                                               //left      A is 4   
+        //     Ball_X_Motion_next = -10'd1;                    //          1 x left
+        //     Ball_Y_Motion_next = 10'd0;
+        // end 
+        // else if (keycode == 8'h07) 
+        // begin                                               //right     D is 7
+        //     Ball_X_Motion_next = 10'd1;                     //          1 x right
+        //     Ball_Y_Motion_next = 10'd0;
+        // end 
 
         // if ( (BallY + BallS) >= Ball_Y_Max )  // Ball is at the bottom edge, BOUNCE!
         // begin

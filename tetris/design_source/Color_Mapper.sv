@@ -155,105 +155,6 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
         .color(block_color_ret)
     );
 
-
-
-    always_comb
-    begin:Draw_game_screen
-        //#TODO: comment out all hardcodin for the game background, it is now in the block color palatee, so if we 
-        //  assign it directly it is hard coding or doing extra work
-        if (DrawX >= 100 && DrawX < 340) begin  
-            //block boundry logic
-            if (block_boundry_X == 0 || block_boundry_Y == 0) begin
-                Red     = 4'h0;                     // aoutline the blocks
-                Green   = 4'h2;
-                Blue    = 4'hf;
-            end
-
-            //extra, not needed, done by the following block
-            // //outline the game
-            // if (DrawY == 0 || DrawY == 479) begin
-            //     Red = 4'h0;                     // aoutline the game
-            //     Green = 4'h8;
-            //     Blue = 4'hf;
-            // end
-
-            //draw block
-            else begin
-                Red     = block_color_ret[11:8];                     //game background
-                Green   = block_color_ret[7:4];
-                Blue    = block_color_ret[3:0];
-            end
-        end
-
-        //game logic here
-       
-        //outline the game
-        else if (DrawX == 99 || DrawX == 100 || DrawX == 340 || DrawX == 341 || DrawY == 0 || DrawY == 479 || DrawX == 639) begin
-            Red = 4'h0;                     // aoutline the game
-            Green = 4'h8;
-            Blue = 4'hf;
-        end
-
-        else if ((DrawX >=400 && DrawX < 580) && (DrawY >=80 && DrawY < 128) && char_pixels_ret[59-loc_in_sign_X_scaled]) begin 
-            Red = color_pixels_ret[11:8];   //tetris sign
-            Green = color_pixels_ret[7:4];
-            Blue = color_pixels_ret[3:0];
-        end  
-
-        else if ((DrawX >=400 && DrawX < 456) && (DrawY >=150 && DrawY < 170) && score_pixels_ret[55-loc_in_sign_X]) begin 
-            Red = 4'hf;   //Score sign
-            Green = 4'hf;
-            Blue = 4'hf;
-        end  
-
-        else if ((DrawX >=400 && DrawX < 448) && (DrawY >=168 && DrawY < 188) && time_pixels_ret[47-loc_in_sign_X]) begin 
-            Red = 4'hf;   //Time sign
-            Green = 4'hf;
-            Blue = 4'hf;
-        end  
-
-        else if ((DrawX >=400 && DrawX < 496) && (DrawY >=186 && DrawY < 206) && next_block_pixels_ret[95-loc_in_sign_X]) begin 
-            Red = 4'hf;   //next block sign
-            Green = 4'hf;
-            Blue = 4'hf;
-        end  
-
-        else if (((DrawX > 400 && DrawX < 580) && (DrawY > 220 && DrawY < 400))) begin
-            if (block_boundry_X_next == 0 || block_boundry_Y_next == 0) begin
-                Red = 4'h0;                     // aoutline the blocks
-                Green = 4'h2;
-                Blue = 4'hf;
-            end
-            else begin
-                //#TODO: comment out all hardcodin for the game background, it is now in the block color 
-                //  palatee, so if we assign it directly it is hard coding or doing extra work
-                //
-                Red = 4'h0;                     //game background
-                Green = 4'h0;
-                Blue = 4'h7;
-            end
-        end
-
-        else if (((DrawX == 400 || DrawX == 580) && (DrawY >= 220 && DrawY <= 400)) || ((DrawX >= 400 && DrawX <= 580) && (DrawY == 220 || DrawY == 400))) begin
-            Red = 4'h0;                     // aoutline the game
-            Green = 4'h8;
-            Blue = 4'hf;
-        end
-
-        else begin 
-            Red = 4'h1;                     // background
-            Green = 4'h0;
-            Blue = 4'h4;
-        end
-    end 
-
-
-// want the tetris sign to be centered in the 300, 340+60 = 400 -580
-
-// 300m pixels left on the rifht signed
-// 6 letters each w a min of 10 pixels or 60 total
-// try x3 first for tetris of 180 w x 48 h
-
     // coordinats of tetris sign
     int start_x, start_y;
     assign start_x = 140;
@@ -298,7 +199,18 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
         //#TODO: comment out all hardcodin for the game background, it is now in the block color palatee, so if we 
         //  assign it directly it is hard coding or doing extra work
 
-        if (startscreen == 1) begin
+        
+
+    end 
+
+
+
+    always_comb
+    begin
+        //#TODO: comment out all hardcodin for the game background, it is now in the block color palatee, so if we 
+        //  assign it directly it is hard coding or doing extra work
+        
+        if (startscreen == 1) begin:Draw_startscreen
             //tetris sign
             if ((DrawX >=140 && DrawX < 500) && (DrawY >=140 && DrawY < 200) && start_char_pixels_ret[59-loc_in_start_X_scaled]) begin 
                 Red = start_color_pixels_ret[11:8];   //tetris sign
@@ -323,6 +235,100 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
             
             //add logic for "press P to play"
         end
+        
+        else begin:Draw_game_screen
+            if (DrawX >= 100 && DrawX < 340) begin  
+                //block boundry logic
+                if (block_boundry_X == 0 || block_boundry_Y == 0) begin
+                    Red     = 4'h0;                     // aoutline the blocks
+                    Green   = 4'h2;
+                    Blue    = 4'hf;
+                end
 
+                //extra, not needed, done by the following block
+                // //outline the game
+                // if (DrawY == 0 || DrawY == 479) begin
+                //     Red = 4'h0;                     // aoutline the game
+                //     Green = 4'h8;
+                //     Blue = 4'hf;
+                // end
+
+                //draw block
+                else begin
+                    Red     = block_color_ret[11:8];                     //game background
+                    Green   = block_color_ret[7:4];
+                    Blue    = block_color_ret[3:0];
+                end
+            end
+
+            //game logic here
+        
+            //outline the game
+            else if (DrawX == 99 || DrawX == 100 || DrawX == 340 || DrawX == 341 || DrawY == 0 || DrawY == 479 || DrawX == 639) begin
+                Red = 4'h0;                     // aoutline the game
+                Green = 4'h8;
+                Blue = 4'hf;
+            end
+
+            else if ((DrawX >=400 && DrawX < 580) && (DrawY >=80 && DrawY < 128) && char_pixels_ret[59-loc_in_sign_X_scaled]) begin 
+                Red = color_pixels_ret[11:8];   //tetris sign
+                Green = color_pixels_ret[7:4];
+                Blue = color_pixels_ret[3:0];
+            end  
+
+            else if ((DrawX >=400 && DrawX < 456) && (DrawY >=150 && DrawY < 170) && score_pixels_ret[55-loc_in_sign_X]) begin 
+                Red = 4'hf;   //Score sign
+                Green = 4'hf;
+                Blue = 4'hf;
+            end  
+
+            else if ((DrawX >=400 && DrawX < 448) && (DrawY >=168 && DrawY < 188) && time_pixels_ret[47-loc_in_sign_X]) begin 
+                Red = 4'hf;   //Time sign
+                Green = 4'hf;
+                Blue = 4'hf;
+            end  
+
+            else if ((DrawX >=400 && DrawX < 496) && (DrawY >=186 && DrawY < 206) && next_block_pixels_ret[95-loc_in_sign_X]) begin 
+                Red = 4'hf;   //next block sign
+                Green = 4'hf;
+                Blue = 4'hf;
+            end  
+
+            else if (((DrawX > 400 && DrawX < 580) && (DrawY > 220 && DrawY < 400))) begin
+                if (block_boundry_X_next == 0 || block_boundry_Y_next == 0) begin
+                    Red = 4'h0;                     // aoutline the blocks
+                    Green = 4'h2;
+                    Blue = 4'hf;
+                end
+                else begin
+                    //#TODO: comment out all hardcodin for the game background, it is now in the block color 
+                    //  palatee, so if we assign it directly it is hard coding or doing extra work
+                    //
+                    Red = 4'h0;                     //game background
+                    Green = 4'h0;
+                    Blue = 4'h7;
+                end
+            end
+
+            else if (((DrawX == 400 || DrawX == 580) && (DrawY >= 220 && DrawY <= 400)) || ((DrawX >= 400 && DrawX <= 580) && (DrawY == 220 || DrawY == 400))) begin
+                Red = 4'h0;                     // aoutline the game
+                Green = 4'h8;
+                Blue = 4'hf;
+            end
+
+            else begin 
+                Red = 4'h1;                     // background
+                Green = 4'h0;
+                Blue = 4'h4;
+            end
+        end
     end 
+
+
+// want the tetris sign to be centered in the 300, 340+60 = 400 -580
+
+// 300m pixels left on the rifht signed
+// 6 letters each w a min of 10 pixels or 60 total
+// try x3 first for tetris of 180 w x 48 h
+
 endmodule
