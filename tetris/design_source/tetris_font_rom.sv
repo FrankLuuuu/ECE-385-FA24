@@ -306,7 +306,7 @@ module tetris_block_color (      input  [2:0]    addr,      //calculate actual n
 	// parameter [0:2**ADDR_WIDTH-1][DATA_WIDTH-1:0] TETRIS_color = {
         parameter [0:2**ADDR_WIDTH-1][DATA_WIDTH-1:0] TETRIS_color = {
                 12'h0df,        //light blue
-                12'hf9a,        //pink
+                12'hf9c,        //pink
                 12'hf73,        //orange
                 12'hee5,        //yellow
                 12'h7f6,        //green
