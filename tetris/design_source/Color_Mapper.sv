@@ -194,14 +194,12 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
         .data(press_p_pixels_ret));    // get the pixel data
 	 
 
-    always_comb
-    begin:Draw_startscreen
-        //#TODO: comment out all hardcodin for the game background, it is now in the block color palatee, so if we 
-        //  assign it directly it is hard coding or doing extra work
+    // always_comb
+    // begin:Draw_startscreen
+    //     //#TODO: comment out all hardcodin for the game background, it is now in the block color palatee, so if we 
+    //     //  assign it directly it is hard coding or doing extra work
 
-        
-
-    end 
+    // end 
 
 
 
