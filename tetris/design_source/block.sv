@@ -94,7 +94,7 @@ module block
 
         // initial state
         if (start) begin
-            start_next = 0;grid[i][j] <= 7;
+            start_next = 0;
             new_block = 1;
         end
 
