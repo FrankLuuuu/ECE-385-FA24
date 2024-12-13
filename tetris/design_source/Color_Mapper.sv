@@ -59,6 +59,7 @@
 
 // //shorter just for showing the background
 module color_mapper (   input logic [9:0]   DrawX, DrawY, 
+                        input logic         paused,
                         input logic [2:0]   next_block,
                         input logic [9:0]   score,
                         input logic [2:0]   grid[20][10],
@@ -176,25 +177,29 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
     assign tenplace         = DrawX - 472;
     assign oneplace         = DrawX - 480;
 
+    int score_row;
+    assign score_row = DrawY -150;
+
+
 
     logic [7:0] score_thousand_pixels_ret;
     number_font_rom da_thousand_score(
-        .addr((thousand*10)+loc_in_score_Y),
+        .addr((thousand*10)+score_row),
         .data(score_thousand_pixels_ret));
     
     logic [7:0] score_hundred_pixels_ret;
     number_font_rom da_hundred_score(
-        .addr((hundred*10)+loc_in_score_Y),
+        .addr((hundred*10)+score_row),
         .data(score_hundred_pixels_ret));
 
     logic [7:0] score_ten_pixels_ret;
     number_font_rom da_ten_score(
-        .addr((ten*10)+loc_in_score_Y),
+        .addr((ten*10)+score_row),
         .data(score_ten_pixels_ret));
 
     logic [7:0] score_one_pixels_ret;
     number_font_rom da_one_score(
-        .addr((one*10)+loc_in_score_Y),
+        .addr((one*10)+score_row),
         .data(score_one_pixels_ret));
 
     //bext bloxk actual block 
@@ -254,6 +259,43 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
     //     .data(press_p_pixels_ret));    // get the pixel data
 	 
 
+    //game over math
+    int pause_x, pause_y;
+    assign pause_x = 104;
+    assign pause_y = 140;
+
+    //loc in GameOver sign
+    logic [9:0] pause_loc_x, pause_loc_y;
+    assign pause_loc_x = DrawX - pause_x;
+    assign pause_loc_y = DrawY - pause_y;
+
+    // pixel locatecion in sign
+    logic [9:0] loc_in_pause_X_scaled, loc_in_pause_Y_scaled;
+    assign loc_in_pause_X_scaled = pause_loc_x / 6;   //caled doen
+    assign loc_in_pause_Y_scaled = pause_loc_y / 6;    //scled down
+
+    // logic [9:0] color_index;
+    // assign color_index = pause_loc_x / 60;        // divide by 10 for letter, divide by 3 for scale
+
+    logic [71:0] pause_char_pixels_ret;
+    tetris_font_rom da_pause_row( 
+        .addr(loc_in_pause_Y_scaled[3:0]),      //this might be wrong, got confused with int v logic and slicing
+        .data(pause_char_pixels_ret));    // get the pixel data
+	 
+
+
+    logic [9:0] pause_press_x, pause_press_y;
+    assign pause_press_x = DrawX - 252; 
+    assign pause_press_y = DrawY - 275;
+
+    logic [135:0] press_p_pixels_ret;
+    press_p_font_rom da_pause_row( 
+        .addr(pause_press_y[3:0]),      //this might be wrong, got confused with int v logic and slicing
+        .data(press_p_pixels_ret));    // get the pixel data
+	 
+
+
+
     // always_comb
     // begin:Draw_startscreen
     //     //#TODO: comment out all hardcodin for the game background, it is now in the block color palatee, so if we 
@@ -293,8 +335,35 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
             
         //     //add logic for "press P to play"
         // end
-        
-        begin:Draw_game_screen
+        if (paused) begin:game_over_screen
+            // Game over sign is 432 pixels
+            if ((DrawX >=104 && DrawX < 536) && (DrawY >=140 && DrawY < 200) && pause_char_pixels_ret[71-pause_press_x]) begin 
+                Red = 4'hf;   //tetris sign
+                Green = 4'hf;
+                Blue = 4'hf;
+            end 
+            
+            // //outline tetris blcok
+            // else if (((DrawX == 100 || DrawX == 540) && (DrawY >=100 && DrawY <= 240)) || ((DrawX >= 100 && DrawX <= 540) && (DrawY == 100 || DrawY == 240))) begin
+            //     Red = 4'h0;                     // aoutline the tetris
+            //     Green = 4'h8;
+            //     Blue = 4'hf;
+            // end
+
+            //draw prss p to play
+            else if ((DrawX >= 252 && DrawX < 388) && DrawY >=275 && DrawY < 285 && press_p_pixels_ret[135-start_press_x]) begin
+                Red = 4'hf;
+                Green = 4'hf;
+                Blue = 4'hf;
+            end
+            else begin
+                Red = 4'h0;                     // aoutline the game
+                Green = 4'h8;
+                Blue = 4'hf;
+            end
+
+        end
+        else begin:Draw_game_screen
             if (DrawX >= 100 && DrawX < 340) begin  
                 //block boundry logic
                 if (block_boundry_X == 0 || block_boundry_Y == 0) begin

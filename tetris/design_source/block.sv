@@ -31,6 +31,7 @@ module block
     input  logic        frame_clk,
     input  logic [7:0]  keycode,
 
+    // output logic        paused,
     output logic [9:0]  score,
     output logic [2:0]  next_block,
     output logic [2:0]  grid[20][10]
@@ -57,7 +58,7 @@ module block
     logic moved;
     logic valid;
 
-    // integer i, j;
+    integer row, col;
     localparam GRID_HEIGHT = 20;
     localparam GRID_WIDTH  = 10;
     
@@ -73,10 +74,18 @@ module block
         y_next = y;
 
         id_next = id;
-        next_block_next = next_block;
+        // next_block_next = next_block;
 
         new_block = 0;
         moved = 0;
+
+        // paused = 0;
+        // if (keycode == 8'h13) begin
+        //     paused = 1;
+        // end
+        // else if (keycode == 8'h15) begin
+        //     paused = 0;
+        // end
 
         // check if the block can be dropped
         dropping = 1;
@@ -126,6 +135,9 @@ module block
                     for (int j = 0; j < GRID_WIDTH; j++) begin
                         if (grid[i][j] < 6) begin
                             grid_next[i][j] = 6;
+                            if (i == 0) begin
+                                paused = 1;
+                            end
                         end
                     end
                 end
@@ -160,12 +172,19 @@ module block
             
             // generate next block
             if (id >= 5) begin
-                next_block_next = id % 5;
+                id_next = id % 5;
             end else begin
-                next_block_next = id + 1;
+                id_next = id + 1;
             end
-            id_next = next_block;
-            next_block = next_block_next;
+
+
+            // if (id >= 5) begin
+            //     next_block_next = id % 5;
+            // end else begin
+            //     next_block_next = id + 1;
+            // end
+            // id_next = next_block;
+            // next_block = next_block_next;
             
             // i block
             if (id_next == 0) begin
@@ -237,7 +256,7 @@ module block
         else if (keycode != 8'h00 && keycode_prev == 8'h00 && !moved) begin
             // w (rotate))
             if (keycode == 8'h1A) begin
-                next_block_next = id + 1;
+                id_next = id + 1;
                 // i block
                 if (grid[y][x] == 0) begin
                     if (rotation[0] == 0) begin
@@ -498,7 +517,7 @@ module block
                 
             // a key
             end else if (keycode == 8'h04) begin
-                next_block_next = id + 2;
+                id_next = id + 2;
                 valid = 1;
                 for (int i = 0; i < GRID_HEIGHT; i++) begin
                     for (int j = 0; j < GRID_WIDTH; j++) begin
@@ -529,7 +548,7 @@ module block
 
             // d key
             end else if (keycode == 8'h07) begin
-                next_block_next = id + 3;
+                id_next = id + 3;
                 valid = 1;
                 for (int i = 0; i < GRID_HEIGHT; i++) begin
                     for (int j = 0; j < GRID_WIDTH; j++) begin
@@ -549,7 +568,7 @@ module block
                         for (int j = 0; j < GRID_WIDTH; j++) begin
                             if (grid[i][j] == 6) begin
                                 grid_next[i][j] = grid[i][j];
-                            end else if (i >= 1 && grid[i][j - 1] < 6) begin
+                            end else if (j >= 1 && grid[i][j - 1] < 6) begin
                                 grid_next[i][j] = grid[i][j - 1];
                             end else begin
                                 grid_next[i][j] = 7;
@@ -561,7 +580,7 @@ module block
 
             // s key
             else if (keycode == 8'h16) begin
-                next_block_next = id + 1;
+                id_next = id + 1;
                 drop_it_next = 1;
             end
         end
@@ -570,10 +589,10 @@ module block
     always_ff @(posedge frame_clk) //make sure the frame clock is instantiated correctly
     begin: Move_Block
         if (Reset) begin
-            for (int i = 0; i < GRID_HEIGHT; i++) begin 
-                for (int j = 0; j < GRID_WIDTH; j++) begin
-                    grid[i][j] <= 7;
-                    grid_next[i][j] <= 7;
+            for (row = 0; row < GRID_HEIGHT; row++) begin 
+                for (col = 0; col < GRID_WIDTH; col++) begin
+                    grid[row][col] <= 7;
+                    // grid_next[i][j] <= 7;
                 end
             end
 
@@ -587,6 +606,7 @@ module block
             score <= 0;
 
             id <= 2;
+            next_block <= 4;
 
             keycode_prev <= 8'h00;
         end
@@ -607,7 +627,7 @@ module block
             y <= y_next;
 
             id <= id_next;
-            // next_block <= next_block_next;
+            next_block <= next_block_next;
 
             keycode_prev <= keycode;
         end
