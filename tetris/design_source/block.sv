@@ -73,7 +73,7 @@ module block
         y_next = y;
 
         id_next = id;
-        next_block = id_next;
+        next_block_next = next_block;
 
         new_block = 0;
         moved = 0;
@@ -165,6 +165,7 @@ module block
                 next_block_next = id + 1;
             end
             id_next = next_block;
+            next_block = next_block_next;
             
             // i block
             if (id_next == 0) begin
@@ -606,6 +607,7 @@ module block
             y <= y_next;
 
             id <= id_next;
+            // next_block <= next_block_next;
 
             keycode_prev <= keycode;
         end
