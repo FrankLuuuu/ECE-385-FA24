@@ -47,7 +47,7 @@ module block
     logic [4:0] move, timer;
     logic [4:0] x, y, x_next, y_next;
     logic [1:0] rotation, rotation_next;
-    logic [4:0] id, id_next;
+    logic [4:0] id, id_next, next_block_next;
     logic [9:0] score_next;
     logic start, start_next;
     logic dropping;
@@ -160,12 +160,11 @@ module block
             
             // generate next block
             if (id >= 5) begin
-                id_next = id % 5;
-                next_block = id_next;
+                next_block_next = id % 5;
             end else begin
-                id_next = id + 1;
-                next_block = id_next + 1;
+                next_block_next = id + 1;
             end
+            id_next = next_block;
             
             // i block
             if (id_next == 0) begin
@@ -237,7 +236,7 @@ module block
         else if (keycode != 8'h00 && keycode_prev == 8'h00 && !moved) begin
             // w (rotate))
             if (keycode == 8'h1A) begin
-                id_next = id + 1;
+                next_block_next = id + 1;
                 // i block
                 if (grid[y][x] == 0) begin
                     if (rotation[0] == 0) begin
@@ -498,7 +497,7 @@ module block
                 
             // a key
             end else if (keycode == 8'h04) begin
-                id_next = id + 2;
+                next_block_next = id + 2;
                 valid = 1;
                 for (int i = 0; i < GRID_HEIGHT; i++) begin
                     for (int j = 0; j < GRID_WIDTH; j++) begin
@@ -529,7 +528,7 @@ module block
 
             // d key
             end else if (keycode == 8'h07) begin
-                id_next = id + 3;
+                next_block_next = id + 3;
                 valid = 1;
                 for (int i = 0; i < GRID_HEIGHT; i++) begin
                     for (int j = 0; j < GRID_WIDTH; j++) begin
@@ -560,8 +559,10 @@ module block
             end
 
             // s key
-            end else if (keycode == 8'h16) begin
+            else if (keycode == 8'h16) begin
+                next_block_next = id + 1;
                 drop_it_next = 1;
+            end
         end
     end
 
