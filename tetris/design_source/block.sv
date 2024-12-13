@@ -14,6 +14,17 @@
 //    UIUC ECE Department                                                --
 //-------------------------------------------------------------------------
 
+//how scoring normally works:
+//  1 line cleared is worth 100 points
+//  tetris is 800 points
+//  back to back tetris is 1200
+
+//how we will implement scoring:
+//  1 line cleared  is 1 points
+//  tetris is 8 points
+//  back to back tetris is 12
+
+
 module block
 ( 
     input  logic        Reset, 
@@ -21,7 +32,7 @@ module block
     input  logic [7:0]  keycode,
 
     output logic [9:0]  score,
-    output logic        next_block,
+    output logic [2:0]  next_block,
     output logic [3:0]  grid[20][10]
 );
 
@@ -66,6 +77,7 @@ module block
         new_block = 0;
         moved = 0;
 
+        // check if the block can be dropped
         dropping = 1;
         for (int i = 0; i < GRID_HEIGHT; i++) begin
             for (int j = 0; j < GRID_WIDTH; j++) begin
@@ -79,6 +91,7 @@ module block
             end
         end
 
+        // initial state
         if (start) begin
             start_next = 0;
             new_block = 1;
@@ -118,6 +131,7 @@ module block
             end
         end
 
+        // when current block stops moving
         if (new_block) begin
             // clear full rows
             for (int i = 0; i < GRID_HEIGHT; i++) begin
@@ -144,9 +158,10 @@ module block
             
             // generate next block
             if (id >= 6) begin
-                id_next = id % 6;
+                id_next = id % 7;
             end else begin
                 id_next = id + 1;
+                next_block = id_next + 1;
             end
             
             // i block
@@ -531,7 +546,7 @@ module block
                         for (int j = 0; j < GRID_WIDTH; j++) begin
                             if (grid[i][j] >= 8) begin
                                 grid_next[i][j] = grid[i][j];
-                            end else if (i >= 1 && grid[][j - 1] < 7) begin
+                            end else if (i >= 1 && grid[i][j - 1] < 7) begin
                                 grid_next[i][j] = grid[i][j - 1];
                             end else begin
                                 grid_next[i][j] = 7;
@@ -575,21 +590,17 @@ module block
                 timer <= 0;
             end
 
-            if (score_next % 4 == 0 && score_next > 0) begin
-                score_next = score_next + 1;
-            end
+            grid <= grid_next;
 
-            grid = grid_next;
+            start <= start_next;
+            score <= score_next;
+            drop_it <= drop_it_next;
+            rotation <= rotation_next;
 
-            start = start_next;
-            score = score_next;
-            drop_it = drop_it_next;
-            rotation = rotation_next;
+            x <= x_next;
+            y <= y_next;
 
-            x = x_next;
-            y = y_next;
-
-            id = id_next;
+            id <= id_next;
 
             keycode_prev <= keycode;
         end
