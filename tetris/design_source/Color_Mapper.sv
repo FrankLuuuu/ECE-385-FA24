@@ -197,6 +197,24 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
         .addr((one*10)+loc_in_score_Y),
         .data(score_one_pixels_ret));
 
+    //bext bloxk actual block 
+    // logic [9:0] color_next_block_index;
+    // assign color_next_block_index = D;        // divide by 10 for letter, divide by 3 for scale
+    logic [9:0] real_loc_in_next_block_X, real_loc_in_next_block_Y;
+    assign real_loc_in_next_block_X = DrawX -430;   //loc based on top left corner
+    assign real_loc_in_next_block_Y = DrawY -250;
+
+
+    logic [3:0] char_block_pixels_ret;
+    tetris_block_rom da_block_row( 
+        .addr((BLOCK_NEXT_ID*10) +(real_loc_in_next_block_Y / 30)),     //TODO: must add block next next id
+        .data(char_block_pixels_ret));    // get the pixel data
+	 
+    logic [11:0] color_block_pixels_ret;
+    tetris_block_color da_block_color(
+        .addr(BLOCK_NEXT_ID),            //TODO: this must change into the next block index
+        .color(color_block_pixels_ret));
+
     // // coordinats of tetris sign
     // int start_x, start_y;
     // assign start_x = 140;
@@ -360,7 +378,12 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
             end  
 
             else if (((DrawX > 400 && DrawX < 580) && (DrawY > 220 && DrawY < 400))) begin
-                if (block_boundry_X_next == 0 || block_boundry_Y_next == 0) begin
+                if ((DrawX >= 430 && DrawX < 550) && (DrawY >= 250 && DrawY < 370) && (char_block_pixels_ret[3 - (real_loc_in_next_block_X / 30)])) begin
+                    Red     = color_block_pixels_ret[11:8];
+                    Green   = color_block_pixels_ret[7:4];
+                    Blue    = color_block_pixels_ret[3:0];
+                end
+                else if (block_boundry_X_next == 0 || block_boundry_Y_next == 0) begin
                     Red = 4'h0;                     // aoutline the blocks
                     Green = 4'h2;
                     Blue = 4'hf;
