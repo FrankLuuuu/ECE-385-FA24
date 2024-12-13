@@ -194,6 +194,45 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
         .data(press_p_pixels_ret));    // get the pixel data
 	 
 
+    //LOGIC FOR THE SCORE NUMBERS 
+    // logic [9:0] loc_in_score_num_Y;
+    // // assign loc_in_score_time_X = DrawX - score_time_X;    //real
+    // assign loc_in_score_Y = DrawY - 150;    //real
+    //assume that score is passed into collor mapper
+    int thousand, hundred, ten, one;
+    assign thousand = score / 1000;
+    assign hundred = score / 100;
+    assign ten = score / 10;
+    assign one = score % 10;
+
+    int thousandplace, hundredplace, tenplace, oneplace;
+    assign thousandplace    = DrawX - 456;
+    assign hundredplace     = DrawX - 464;
+    assign tenplace         = DrawX - 472;
+    assign oneplace         = DrawX - 480;
+
+
+    logic [7:0] score_thousand_pixels_ret;
+    number_font_rom da_thousand_score(
+        .addr((thousand*10)+loc_in_score_Y[3:0]),
+        .data(score_thousand_pixels_ret));
+    
+    logic [7:0] score_hundred_pixels_ret;
+    number_font_rom da_thousand_score(
+        .addr((hundred*10)+loc_in_score_Y[3:0]),
+        .data(score_hundred_pixels_ret));
+
+    logic [7:0] score_ten_pixels_ret;
+    number_font_rom da_thousand_score(
+        .addr((ten*10)+loc_in_score_Y[3:0]),
+        .data(score_ten_pixels_ret));
+
+    logic [7:0] score_one_pixels_ret;
+    number_font_rom da_thousand_score(
+        .addr((one*10)+loc_in_score_Y[3:0]),
+        .data(score_one_pixels_ret));
+
+
     // always_comb
     // begin:Draw_startscreen
     //     //#TODO: comment out all hardcodin for the game background, it is now in the block color palatee, so if we 
@@ -243,13 +282,12 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
                     Blue    = 4'hf;
                 end
 
-                //extra, not needed, done by the following block
-                // //outline the game
-                // if (DrawY == 0 || DrawY == 479) begin
-                //     Red = 4'h0;                     // aoutline the game
-                //     Green = 4'h8;
-                //     Blue = 4'hf;
-                // end
+                //outline the game
+                if (DrawY == 0 || DrawY == 479) begin
+                    Red = 4'h0;                     // aoutline the game
+                    Green = 4'h8;
+                    Blue = 4'hf;
+                end
 
                 //draw block
                 else begin
@@ -279,6 +317,28 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
                 Green = 4'hf;
                 Blue = 4'hf;
             end  
+
+            else if ((DrawX >=456 && DrawX < 464) && (DrawY >=150 && DrawY < 170) && score_thousand_pixels_ret[7-thousandplace]) begin 
+                Red = 4'hf;   //Score thousand sign
+                Green = 4'hf;
+                Blue = 4'hf;
+            end 
+            else if ((DrawX >=464 && DrawX < 472) && (DrawY >=150 && DrawY < 170) && score_hundred_pixels_ret[7-hundredplace]) begin 
+                Red = 4'hf;   //Score hundred sign
+                Green = 4'hf;
+                Blue = 4'hf;
+            end 
+            else if ((DrawX >=472 && DrawX < 480) && (DrawY >=150 && DrawY < 170) && score_ten_pixels_ret[7-tenplace]) begin 
+                Red = 4'hf;   //Score ten sign
+                Green = 4'hf;
+                Blue = 4'hf;
+            end 
+            else if ((DrawX >=480 && DrawX < 488) && (DrawY >=150 && DrawY < 170) && score_one_pixels_ret[7-oneplace]) begin 
+                Red = 4'hf;   //Score one sign
+                Green = 4'hf;
+                Blue = 4'hf;
+            end 
+
 
             else if ((DrawX >=400 && DrawX < 448) && (DrawY >=168 && DrawY < 188) && time_pixels_ret[47-loc_in_sign_X]) begin 
                 Red = 4'hf;   //Time sign

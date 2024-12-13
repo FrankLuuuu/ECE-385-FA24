@@ -98,14 +98,14 @@ module  Block
             // Block_X_Motion_next = 10'd0;
 
             //check if valid rotaion
-            for (i = 0; i < 4; i++) 
-                for (j = 0; j < 4; j++) 
+            for (i = 0; i < 4 && valid_move; i++) 
+                for (j = 0; j < 4 && valid_move; j++) 
                     if (rot1_block[i][j] == 1) begin
                         //rotate puts block out of bounds
                         if (BlockX +i <0 || BlockX+i >19 || BlockY +j <0 || BlockY+j >19)
                             valid_move = 0;
                         //collition
-                        else if (grid[BlockY+i][BlockX+j] >= 8)
+                        else if (grid[BlockY+i][BlockX+j] == 6)
                             valid_move = 0;
                     end
 
@@ -127,23 +127,28 @@ module  Block
         begin                                               //down      S is 22
             // Block_Y_Motion_next = 10'd1;                     //          1 y down
             // Block_X_Motion_next = 10'd0;
-            for (i = 0; i < 4; i++) 
-                for (j = 0; j < 4; j++) 
+            for (i = 0; i < 4 && valid_move; i++) 
+                for (j = 0; j < 4 && valid_move; j++) 
                     //onky care if there is actually a block
                     if (block_ret[i][j] == 1) begin
                         //check boundry
                         if ((BlockY + i + Block_Y_Step_Fast) >= 20) begin
                             valid_move = 0;      //out of Y boundary
-                            grid[BlockY+i][BlockX+j] = grid[BlockY+i][BlockX+j]+8;
+                            grid[BlockY+i][BlockX+j] = 6;
                         end
 
                         // else if ((BlockY + i + Block_Y_Step_Fast) < 20) && (grid[BlockY+i+Block_Y_Step_Fast][BlockX+j]>= 8 && block_ret[i][j] == 1)
                         //     valid_move = 0      //in Y boundary but blcok there
-                        else if ((BlockY + i + Block_Y_Step_Fast) < 20) && (grid[BlockY+i+Block_Y_Step_Fast][BlockX+j]>= 8) begin
+                        else if ((BlockY + i + Block_Y_Step_Fast) < 20) && (grid[BlockY+i+Block_Y_Step_Fast][BlockX+j]== 6) begin
                             valid_move = 0;      //in Y boundary but block there
-                            grid[BlockY+i][BlockX+j] = grid[BlockY+i][BlockX+j]+8;
+                            grid[BlockY+i][BlockX+j] = 6;
                         end
                     end
+            if (!valid_move) 
+                for (i = 0; i < 4; i++) 
+                    for (j = 0; j < 4 ; j++) 
+                        if block_ret[i][j] == 1
+                            grid[BlockY+i][BlockX+j] = 6;
             if (valid_move) begin
                 for (i = 3; i > -1; i--) 
                     for (j = 0; j < 4; j++) 
@@ -168,7 +173,7 @@ module  Block
                         if (BlockX+ j-1 <0 )
                             valid_move = 0;
                         //in bounds but theres a block
-                        else if ((BlockX+j-1 >=0) && grid[BlockY+i][BlockX+j - 1] >= 8)
+                        else if ((BlockX+j-1 >=0) && grid[BlockY+i][BlockX+j - 1] == 6)
                             valid_move = 0;
                     end
 
@@ -194,7 +199,7 @@ module  Block
                         if (BlockX+j+1 >= 20 )
                             valid_move = 0;
                         //in bounds but theres a block
-                        else if ((BlockX+j+1 < 20) && grid[BlockY+i][BlockX+j + 1] >= 8)
+                        else if ((BlockX+j+1 < 20) && grid[BlockY+i][BlockX+j + 1] == 6)
                             valid_move = 0;
                     end
 
