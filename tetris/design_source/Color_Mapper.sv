@@ -153,47 +153,47 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
     //get the color
     int block_color_ret;
     tetris_block_color da_block_color(
-        .addr(block_index),
+        .addr(block_index[2:0]),
         .color(block_color_ret)
     );
 
-    // coordinats of tetris sign
-    int start_x, start_y;
-    assign start_x = 140;
-    assign start_y = 140;
+    // // coordinats of tetris sign
+    // int start_x, start_y;
+    // assign start_x = 140;
+    // assign start_y = 140;
 
-    //lock in tetris sign
-    logic [9:0] start_loc_x, start_loc_y;
-    assign start_loc_x = DrawX - start_x;
-    assign start_loc_y = DrawY - start_y;
+    // //lock in tetris sign
+    // logic [9:0] start_loc_x, start_loc_y;
+    // assign start_loc_x = DrawX - start_x;
+    // assign start_loc_y = DrawY - start_y;
 
-    // pixel locatecion in sign
-    logic [9:0] loc_in_start_X_scaled, loc_in_start_Y_scaled;
-    assign loc_in_start_X_scaled = start_loc_x / 6;   //caled doen
-    assign loc_in_start_Y_scaled = start_loc_y / 6;    //scled down
+    // // pixel locatecion in sign
+    // logic [9:0] loc_in_start_X_scaled, loc_in_start_Y_scaled;
+    // assign loc_in_start_X_scaled = start_loc_x / 6;   //caled doen
+    // assign loc_in_start_Y_scaled = start_loc_y / 6;    //scled down
 
-    logic [9:0] color_index;
-    assign color_index = start_loc_x / 60;        // divide by 10 for letter, divide by 3 for scale
+    // logic [9:0] color_index;
+    // assign color_index = start_loc_x / 60;        // divide by 10 for letter, divide by 3 for scale
 
-    logic [59:0] start_char_pixels_ret;
-    tetris_font_rom da_start_row( 
-        .addr(loc_in_start_Y_scaled[3:0]),      //this might be wrong, got confused with int v logic and slicing
-        .data(start_char_pixels_ret));    // get the pixel data
+    // logic [59:0] start_char_pixels_ret;
+    // tetris_font_rom da_start_row( 
+    //     .addr(loc_in_start_Y_scaled[3:0]),      //this might be wrong, got confused with int v logic and slicing
+    //     .data(start_char_pixels_ret));    // get the pixel data
 	 
-    logic [11:0] start_color_pixels_ret;
-    tetris_font_color da_start_color(
-        .addr(color_index[2:0]),
-        .color(start_color_pixels_ret));
+    // logic [11:0] start_color_pixels_ret;
+    // tetris_font_color da_start_color(
+    //     .addr(color_index[2:0]),
+    //     .color(start_color_pixels_ret));
 
 
-    logic [9:0] start_press_x, start_press_y;
-    assign start_press_x = DrawX - 252; 
-    assign start_press_y = DrawY - 275;
+    // logic [9:0] start_press_x, start_press_y;
+    // assign start_press_x = DrawX - 252; 
+    // assign start_press_y = DrawY - 275;
 
-    logic [135:0] press_p_pixels_ret;
-    tetris_font_rom da_start_row( 
-        .addr(start_press_y[3:0]),      //this might be wrong, got confused with int v logic and slicing
-        .data(press_p_pixels_ret));    // get the pixel data
+    // logic [135:0] press_p_pixels_ret;
+    // tetris_font_rom da_start_row( 
+    //     .addr(start_press_y[3:0]),      //this might be wrong, got confused with int v logic and slicing
+    //     .data(press_p_pixels_ret));    // get the pixel data
 	 
 
     // always_comb
@@ -210,33 +210,33 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
         //#TODO: comment out all hardcodin for the game background, it is now in the block color palatee, so if we 
         //  assign it directly it is hard coding or doing extra work
         
-        if (startscreen == 1) begin:Draw_startscreen
-            //tetris sign
-            if ((DrawX >=140 && DrawX < 500) && (DrawY >=140 && DrawY < 200) && start_char_pixels_ret[59-loc_in_start_X_scaled]) begin 
-                Red = start_color_pixels_ret[11:8];   //tetris sign
-                Green = start_color_pixels_ret[7:4];
-                Blue = start_color_pixels_ret[3:0];
-            end 
+        // if (startscreen == 1) begin:Draw_startscreen
+        //     //tetris sign
+        //     if ((DrawX >=140 && DrawX < 500) && (DrawY >=140 && DrawY < 200) && start_char_pixels_ret[59-loc_in_start_X_scaled]) begin 
+        //         Red = start_color_pixels_ret[11:8];   //tetris sign
+        //         Green = start_color_pixels_ret[7:4];
+        //         Blue = start_color_pixels_ret[3:0];
+        //     end 
             
-            //outline tetris blcok
-            else if (((DrawX == 100 || DrawX == 540) && (DrawY >=100 && DrawY <= 240)) || ((DrawX >= 100 && DrawX <= 540) && (DrawY == 100 || DrawY == 240))) begin
-                Red = 4'h0;                     // aoutline the tetris
-                Green = 4'h8;
-                Blue = 4'hf;
-            end
+        //     //outline tetris blcok
+        //     else if (((DrawX == 100 || DrawX == 540) && (DrawY >=100 && DrawY <= 240)) || ((DrawX >= 100 && DrawX <= 540) && (DrawY == 100 || DrawY == 240))) begin
+        //         Red = 4'h0;                     // aoutline the tetris
+        //         Green = 4'h8;
+        //         Blue = 4'hf;
+        //     end
 
-            //draw prss p to play
-            else if ((DrawX >= 252 && DrawX < 388) && DrawY >=140 && DrawY < 200 && press_p_pixels_ret[135-start_press_x]) begin
-                Red = 4'hf;
-                Green = 4'hf;
-                Blue = 4'hf;
-            end
-            // boxw = 440, tetrisw = 360 (x6) tetrish = 60, boxh = 140
+        //     //draw prss p to play
+        //     else if ((DrawX >= 252 && DrawX < 388) && DrawY >=140 && DrawY < 200 && press_p_pixels_ret[135-start_press_x]) begin
+        //         Red = 4'hf;
+        //         Green = 4'hf;
+        //         Blue = 4'hf;
+        //     end
+        //     // boxw = 440, tetrisw = 360 (x6) tetrish = 60, boxh = 140
             
-            //add logic for "press P to play"
-        end
+        //     //add logic for "press P to play"
+        // end
         
-        else begin:Draw_game_screen
+        begin:Draw_game_screen
             if (DrawX >= 100 && DrawX < 340) begin  
                 //block boundry logic
                 if (block_boundry_X == 0 || block_boundry_Y == 0) begin

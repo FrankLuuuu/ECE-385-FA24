@@ -45,7 +45,7 @@ module mb_usb_hdmi_top(
     logic locked;
     logic [9:0] drawX, drawY; //, ballxsig, ballysig, ballsizesig;
 
-    logic [3:0] block_grid[20][10];
+    logic [2:0] block_grid[20][10];
     logic [9:0] score;
     logic       next_block;
 

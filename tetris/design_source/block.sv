@@ -33,7 +33,7 @@ module block
 
     output logic [9:0]  score,
     output logic [2:0]  next_block,
-    output logic [3:0]  grid[20][10]
+    output logic [2:0]  grid[20][10]
 );
 
     logic [9:0] Ball_X_Motion;
@@ -42,8 +42,8 @@ module block
     logic [9:0] Ball_Y_Motion_next;
 
     logic [7:0] keycode_prev;
-    logic [3:0] grid_next[20][10];
-    logic [3:0] grid_temp[20][10];
+    logic [2:0] grid_next[20][10];
+    logic [2:0] grid_temp[20][10];
     logic [4:0] move, timer;
     logic [4:0] x, y, x_next, y_next;
     logic [1:0] rotation, rotation_next;
@@ -73,6 +73,7 @@ module block
         y_next = y;
 
         id_next = id;
+        next_block = id_next;
 
         new_block = 0;
         moved = 0;
@@ -81,10 +82,10 @@ module block
         dropping = 1;
         for (int i = 0; i < GRID_HEIGHT; i++) begin
             for (int j = 0; j < GRID_WIDTH; j++) begin
-                if (grid[i][j] < 7) begin
+                if (grid[i][j] < 6) begin
                     if (i >= 19) begin
                         dropping = 0;
-                    end else if (grid[i + 1][j] >= 8) begin
+                    end else if (grid[i + 1][j] != 7 && grid[i + 1][j] != grid[i][j]) begin
                         dropping = 0;
                     end
                 end
@@ -105,11 +106,11 @@ module block
                 y_next = y + 1;
                 for (int i = 0; i < GRID_HEIGHT; i++) begin
                     for (int j = 0; j < GRID_WIDTH; j++) begin
-                        if (grid[i][j] >= 8) begin
+                        if (grid[i][j] == 6) begin
                             grid_next[i][j] = grid[i][j];
                         end else if (i == 0) begin
                             grid_next[i][j] = 7;
-                        end else if (grid[i - 1][j] < 7) begin
+                        end else if (grid[i - 1][j] < 6) begin
                             grid_next[i][j] = grid[i - 1][j];
                         end else begin
                             grid_next[i][j] = 7;
@@ -122,8 +123,8 @@ module block
                 drop_it_next = 0;
                 for (int i = 0; i < GRID_HEIGHT; i++) begin
                     for (int j = 0; j < GRID_WIDTH; j++) begin
-                        if (grid[i][j] < 7) begin
-                            grid_next[i][j] = grid_next[i][j] + 8;
+                        if (grid[i][j] < 6) begin
+                            grid_next[i][j] = 6;
                         end
                     end
                 end
@@ -138,7 +139,7 @@ module block
                 grid_temp = grid_next;
                 clear_row = 1;
                 for (int j = 0; j < GRID_WIDTH; j++) begin
-                    if (grid_temp[i][j] < 8) begin
+                    if (grid_temp[i][j] != 7) begin
                         clear_row = 0;
                     end
                 end
@@ -157,8 +158,9 @@ module block
             end
             
             // generate next block
-            if (id >= 6) begin
-                id_next = id % 7;
+            if (id >= 5) begin
+                id_next = id % 5;
+                next_block = id_next;
             end else begin
                 id_next = id + 1;
                 next_block = id_next + 1;
@@ -219,14 +221,14 @@ module block
                 y_next = 1;
                 rotation_next = 0;
             // z block
-            end else if (id_next == 6) begin
-                grid_next[0][4] = 6;
-                grid_next[0][5] = 6;
-                grid_next[1][5] = 6;
-                grid_next[1][6] = 6;
-                x_next = 4;
-                y_next = 0;
-                rotation_next = 0;
+            // end else if (id_next == 6) begin
+            //     grid_next[0][4] = 6;
+            //     grid_next[0][5] = 6;
+            //     grid_next[1][5] = 6;
+            //     grid_next[1][6] = 6;
+            //     x_next = 4;
+            //     y_next = 0;
+            //     rotation_next = 0;
             end
         end
 
@@ -238,7 +240,7 @@ module block
                 // i block
                 if (grid[y][x] == 0) begin
                     if (rotation[0] == 0) begin
-                        if (y <= 0 || y >= 18 || grid[y - 1][x + 1] >= 8 || grid[y + 1][x + 1] >= 8 || grid[y + 2][x + 1] >= 8) begin
+                        if (y <= 0 || y >= 18 || grid[y - 1][x + 1] == 6 || grid[y + 1][x + 1] == 6 || grid[y + 2][x + 1] == 6) begin
                             // do nothing
                         end else begin
                             rotation_next = rotation + 1;
@@ -252,7 +254,7 @@ module block
                             y_next = y - 1;
                         end
                     end else begin
-                        if (x <= 0 || x >= 8 || grid[y + 1][x - 1] >= 8 || grid[y + 1][x + 1] >= 8 || grid[y + 1][x + 2] >= 8) begin
+                        if (x <= 0 || x >= 8 || grid[y + 1][x - 1] == 6 || grid[y + 1][x + 1] == 6 || grid[y + 1][x + 2] == 6) begin
                              // do nothing
                         end else begin
                             rotation_next = rotation - 1;
@@ -271,7 +273,7 @@ module block
                 // s block
                 else if (grid[y][x] == 4) begin
                     if (rotation[0] == 0) begin
-                        if (y >= 19 || grid[y - 1][x] >= 8 || grid[y + 1][x + 1] >= 8) begin
+                        if (y >= 19 || grid[y - 1][x] == 6 || grid[y + 1][x + 1] == 6) begin
                             // do nothing
                         end else begin
                             rotation_next = rotation + 1;
@@ -283,7 +285,7 @@ module block
                             y_next = y - 1;
                         end
                     end else begin
-                        if (x >= 8 || grid[y - 1][x + 1] >= 8 || grid[y - 1][x + 2] >= 8 ) begin
+                        if (x >= 8 || grid[y - 1][x + 1] == 6 || grid[y - 1][x + 2] == 6) begin
                             // do nothing
                         end else begin
                             rotation_next = rotation - 1;
@@ -297,39 +299,39 @@ module block
                     end
                 end
                 
-                // z block
-                else if (grid[y][x] == 6) begin
-                    if (rotation[0] == 0) begin
-                        if (y >= 18 || x >= 8 || grid[y][x + 2] >= 8 || grid[y + 2][x + 1] >= 8) begin
-                            // do nothing
-                        end else begin
-                            rotation_next = rotation + 1;
-                            grid_next[y][x] = 7;
-                            grid_next[y][x + 1] = 7;
-                            grid_next[y][x + 2] = 6;
-                            grid_next[y + 2][x + 1] = 6;
-                            x_next = x + 1;
-                            y_next = y + 1;
-                        end
-                    end else begin
-                        if (x <= 0 || grid[y - 1][x - 1] >= 8 || grid[y - 1][x] >= 8) begin
-                            // do nothing
-                        end else begin
-                            rotation_next = rotation - 1;
-                            grid_next[y + 1][x] = 7;
-                            grid_next[y - 1][x + 1] = 7;
-                            grid_next[y - 1][x - 1] = 6;
-                            grid_next[y - 1][x] = 6;
-                            x_next = x - 1;
-                            y_next = y - 1;
-                        end
-                    end
-                end
+                // // z block
+                // else if (grid[y][x] == 6) begin
+                //     if (rotation[0] == 0) begin
+                //         if (y >= 18 || x >= 8 || grid[y][x + 2] == 6 || grid[y + 2][x + 1] == 6) begin
+                //             // do nothing
+                //         end else begin
+                //             rotation_next = rotation + 1;
+                //             grid_next[y][x] = 7;
+                //             grid_next[y][x + 1] = 7;
+                //             grid_next[y][x + 2] = 6;
+                //             grid_next[y + 2][x + 1] = 6;
+                //             x_next = x + 1;
+                //             y_next = y + 1;
+                //         end
+                //     end else begin
+                //         if (x <= 0 || grid[y - 1][x - 1] == 6 || grid[y - 1][x] == 6) begin
+                //             // do nothing
+                //         end else begin
+                //             rotation_next = rotation - 1;
+                //             grid_next[y + 1][x] = 7;
+                //             grid_next[y - 1][x + 1] = 7;
+                //             grid_next[y - 1][x - 1] = 6;
+                //             grid_next[y - 1][x] = 6;
+                //             x_next = x - 1;
+                //             y_next = y - 1;
+                //         end
+                //     end
+                // end
                 
                 // l block   
                 else if (grid[y][x] == 2) begin
                     if (rotation == 0) begin
-                        if (y >= 19 || grid[y - 1][x + 1] >= 8 || grid[y + 1][x + 1] >= 8 || grid[y + 1][x + 2] >= 8) begin
+                        if (y >= 19 || grid[y - 1][x + 1] == 6 || grid[y + 1][x + 1] == 6 || grid[y + 1][x + 2] == 6) begin
                             // do nothing
                         end else begin
                             rotation_next = rotation + 1;
@@ -343,7 +345,7 @@ module block
                             y_next = y - 1;
                         end
                     end else if (rotation == 1) begin
-                        if (x <= 0 || grid[y + 1][x - 1] >= 8 || grid[y + 2][x - 1] >= 8 || grid[y + 1][x + 1] >= 8 ) begin
+                        if (x <= 0 || grid[y + 1][x - 1] == 6 || grid[y + 2][x - 1] == 6 || grid[y + 1][x + 1] == 6) begin
                             // do nothing
                         end else begin
                             rotation_next = rotation + 1;
@@ -357,7 +359,7 @@ module block
                             y_next = y + 1;
                         end
                     end else if (rotation == 2) begin
-                        if (y <= 0 || grid[y - 1][x] >= 8 || grid[y - 1][x + 1] >= 8 || grid[y + 1][x + 1] >= 8 ) begin
+                        if (y <= 0 || grid[y - 1][x] == 6 || grid[y - 1][x + 1] == 6 || grid[y + 1][x + 1] == 6) begin
                             // do nothing
                         end else begin
                             rotation_next = rotation + 1;
@@ -371,7 +373,7 @@ module block
                             y_next = y - 1;
                         end
                     end else begin
-                        if (x >= 8 || grid[y][x + 2] >= 8 || grid[y + 1][x + 2] >= 8 || grid[y + 1][x] >= 8 ) begin
+                        if (x >= 8 || grid[y][x + 2] == 6 || grid[y + 1][x + 2] == 6 || grid[y + 1][x] == 6) begin
                             // do nothing
                         end else begin
                             rotation_next = rotation - 3;
@@ -390,7 +392,7 @@ module block
                 // j block
                 else if (grid[y][x] == 1) begin
                     if (rotation == 0) begin
-                        if (y >= 18 || grid[y][x + 1] >= 8 || grid[y][x + 2] >= 8 || grid[y + 2][x + 1] >= 8 ) begin
+                        if (y >= 18 || grid[y][x + 1] == 6 || grid[y][x + 2] == 6 || grid[y + 2][x + 1] == 6) begin
                             // do nothing
                         end else begin
                             rotation_next = rotation + 1;
@@ -404,7 +406,7 @@ module block
                             y_next = y;
                         end
                     end else if (rotation == 1) begin
-                        if (x <= 0 || grid[y + 1][x - 1] >= 8 || grid[y + 1][x + 1] >= 8 || grid[y + 2][x + 1] >= 8 ) begin
+                        if (x <= 0 || grid[y + 1][x - 1] == 6 || grid[y + 1][x + 1] == 6 || grid[y + 2][x + 1] == 6) begin
                             // do nothing
                         end else begin
                             rotation_next = rotation + 1;
@@ -418,7 +420,7 @@ module block
                             y_next = y + 1;
                         end
                     end else if (rotation == 2) begin
-                        if (y <= 0 || grid[y + 1][x] >= 8 || grid[y + 1][x + 1] >= 8 || grid[y - 1][x + 1] >= 8 ) begin
+                        if (y <= 0 || grid[y + 1][x] == 6 || grid[y + 1][x + 1] == 6 || grid[y - 1][x + 1] == 6) begin
                             // do nothing
                         end else begin
                             rotation_next = rotation + 1;
@@ -432,7 +434,7 @@ module block
                             y_next = y + 1;
                         end
                     end else begin
-                        if (x >= 8 || grid[x][y - 1] >= 8 || grid[x][y - 2] >= 8 || grid[x + 2][y - 1] >= 8 ) begin
+                        if (x >= 8 || grid[x][y - 1] == 6 || grid[x][y - 2] == 6 || grid[x + 2][y - 1] == 6) begin
                             // do nothing
                         end else begin
                             rotation_next = rotation - 3;
@@ -451,7 +453,7 @@ module block
                 // t block
                else if (grid[x][y] == 5) begin
                    if (rotation == 0) begin
-                       if (y >= 19 || grid[y + 1][x + 1] >= 8) begin
+                       if (y >= 19 || grid[y + 1][x + 1] == 6) begin
                             // do nothing
                        end else begin
                             rotation_next = rotation + 1;
@@ -461,7 +463,7 @@ module block
                             y_next = y - 1;
                        end
                    end else if (rotation == 1) begin
-                       if (x <= 0 || grid[y + 1][x - 1] >= 8) begin
+                       if (x <= 0 || grid[y + 1][x - 1] == 6) begin
                             // do nothing
                        end else begin
                             rotation_next = rotation + 1;
@@ -471,7 +473,7 @@ module block
                             y_next = y + 1;
                        end
                    end else if (rotation == 2) begin
-                       if (y <= 0 || grid[y - 1][x + 1] >= 8) begin
+                       if (y <= 0 || grid[y - 1][x + 1] == 6) begin
                             // do nothing
                        end else begin
                             rotation_next = rotation + 1;
@@ -481,7 +483,7 @@ module block
                             y_next = y;
                        end
                    end else begin
-                       if (x >= 8 || grid[y][x + 2] >= 8) begin
+                       if (x >= 8 || grid[y][x + 2] == 6) begin
                             // do nothing
                        end else begin
                             rotation_next = rotation - 3;
@@ -499,10 +501,10 @@ module block
                 valid = 1;
                 for (int i = 0; i < GRID_HEIGHT; i++) begin
                     for (int j = 0; j < GRID_WIDTH; j++) begin
-                        if (grid[i][j] < 7) begin
+                        if (grid[i][j] < 6) begin
                             if (j - 1 < 0) begin
                                 valid = 0;
-                            end else if (grid[i][j - 1] >= 8) begin
+                            end else if (grid[i][j - 1] != 7 && grid[i][j - 1] != grid[i][j]) begin
                                 valid = 0;
                             end
                         end
@@ -513,9 +515,9 @@ module block
                     x_next = x - 1;
                     for (int i = 0; i < GRID_HEIGHT; i++) begin
                         for (int j = 0; j < GRID_WIDTH; j++) begin
-                            if (grid[i][j] >= 8) begin
+                            if (grid[i][j] == 6) begin
                                 grid_next[i][j] = grid[i][j];
-                            end else if (j < 9 && grid[i][j + 1] < 7) begin
+                            end else if (j < 9 && grid[i][j + 1] < 6) begin
                                 grid_next[i][j] = grid[i][j + 1];
                             end else begin
                                 grid_next[i][j] = 7;
@@ -530,11 +532,11 @@ module block
                 valid = 1;
                 for (int i = 0; i < GRID_HEIGHT; i++) begin
                     for (int j = 0; j < GRID_WIDTH; j++) begin
-                        if (grid[i][j] < 7) begin
+                        if (grid[i][j] < 6) begin
                             if (j + 1 >= 10) begin
-                                validToMove = 0;
-                            end else if (grid[i][j + 1] >= 8) begin
-                                validToMove = 0;
+                                valid = 0;
+                            end else if (grid[i][j + 1] != 7 && grid[i][j + 1] != grid[i][j]) begin
+                                valid = 0;
                             end
                         end
                     end
@@ -544,9 +546,9 @@ module block
                     x_next = x + 1;
                     for (int i = 0; i < GRID_HEIGHT; i++) begin
                         for (int j = 0; j < GRID_WIDTH; j++) begin
-                            if (grid[i][j] >= 8) begin
+                            if (grid[i][j] == 6) begin
                                 grid_next[i][j] = grid[i][j];
-                            end else if (i >= 1 && grid[i][j - 1] < 7) begin
+                            end else if (i >= 1 && grid[i][j - 1] < 6) begin
                                 grid_next[i][j] = grid[i][j - 1];
                             end else begin
                                 grid_next[i][j] = 7;
@@ -576,7 +578,7 @@ module block
             timer <= 0;
 
             drop_it <= 0;
-            rotation <= 0
+            rotation <= 0;
             valid <= 1;
             score <= 0;
 
