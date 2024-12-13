@@ -47,7 +47,7 @@ module mb_usb_hdmi_top(
 
     logic [2:0] block_grid[20][10];
     logic [9:0] score;
-    logic       next_block;
+    logic [2:0] next_block;
 
     logic hsync, vsync, vde;
     logic [3:0] red, green, blue;

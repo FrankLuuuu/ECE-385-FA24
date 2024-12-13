@@ -59,7 +59,7 @@
 
 // //shorter just for showing the background
 module color_mapper (   input logic [9:0]   DrawX, DrawY, 
-                        input logic         next_block,
+                        input logic [2:0]   next_block,
                         input logic [9:0]   score,
                         input logic [2:0]   grid[20][10],
 
