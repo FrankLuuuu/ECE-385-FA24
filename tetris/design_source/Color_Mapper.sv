@@ -99,7 +99,7 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
 
 
     //score sign logic
-    logic [9:0] loc_in_score_Y;
+    logic [3:0] loc_in_score_Y;
     // assign loc_in_score_time_X = DrawX - score_time_X;    //real
     assign loc_in_score_Y = DrawY - 150;    //real
 
@@ -156,6 +156,46 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
         .addr(block_index[2:0]),
         .color(block_color_ret)
     );
+
+    //////////////////////////////////////////////////////////////////////////////
+
+    //LOGIC FOR THE SCORE NUMBERS 
+    // logic [9:0] loc_in_score_num_Y;
+    // // assign loc_in_score_time_X = DrawX - score_time_X;    //real
+    // assign loc_in_score_Y = DrawY - 150;    //real
+    //assume that score is passed into collor mapper
+    int thousand, hundred, ten, one;
+    assign thousand = score / 1000;
+    assign hundred = score / 100;
+    assign ten = score / 10;
+    assign one = score % 10;
+
+    int thousandplace, hundredplace, tenplace, oneplace;
+    assign thousandplace    = DrawX - 456;
+    assign hundredplace     = DrawX - 464;
+    assign tenplace         = DrawX - 472;
+    assign oneplace         = DrawX - 480;
+
+
+    logic [7:0] score_thousand_pixels_ret;
+    number_font_rom da_thousand_score(
+        .addr((thousand*10)+loc_in_score_Y),
+        .data(score_thousand_pixels_ret));
+    
+    logic [7:0] score_hundred_pixels_ret;
+    number_font_rom da_hundred_score(
+        .addr((hundred*10)+loc_in_score_Y),
+        .data(score_hundred_pixels_ret));
+
+    logic [7:0] score_ten_pixels_ret;
+    number_font_rom da_ten_score(
+        .addr((ten*10)+loc_in_score_Y),
+        .data(score_ten_pixels_ret));
+
+    logic [7:0] score_one_pixels_ret;
+    number_font_rom da_one_score(
+        .addr((one*10)+loc_in_score_Y),
+        .data(score_one_pixels_ret));
 
     // // coordinats of tetris sign
     // int start_x, start_y;
@@ -282,11 +322,36 @@ module color_mapper (   input logic [9:0]   DrawX, DrawY,
                 Blue = 4'hf;
             end  
 
-            else if ((DrawX >=400 && DrawX < 448) && (DrawY >=168 && DrawY < 188) && time_pixels_ret[47-loc_in_sign_X]) begin 
-                Red = 4'hf;   //Time sign
+            ///////////////////////////////
+
+            else if ((DrawX >=456 && DrawX < 464) && (DrawY >=150 && DrawY < 160) && score_thousand_pixels_ret[7-thousandplace]) begin 
+                Red = 4'hf;   //Score thousand sign
                 Green = 4'hf;
                 Blue = 4'hf;
-            end  
+            end 
+            else if ((DrawX >=464 && DrawX < 472) && (DrawY >=150 && DrawY < 160) && score_hundred_pixels_ret[7-hundredplace]) begin 
+                Red = 4'hf;   //Score hundred sign
+                Green = 4'hf;
+                Blue = 4'hf;
+            end 
+            else if ((DrawX >=472 && DrawX < 480) && (DrawY >=150 && DrawY < 160) && score_ten_pixels_ret[7-tenplace]) begin 
+                Red = 4'hf;   //Score ten sign
+                Green = 4'hf;
+                Blue = 4'hf;
+            end 
+            else if ((DrawX >=480 && DrawX < 488) && (DrawY >=150 && DrawY < 160) && score_one_pixels_ret[7-oneplace]) begin 
+                Red = 4'hf;   //Score one sign
+                Green = 4'hf;
+                Blue = 4'hf;
+            end 
+
+            ///////////////////////////////
+
+            // else if ((DrawX >=400 && DrawX < 448) && (DrawY >=168 && DrawY < 188) && time_pixels_ret[47-loc_in_sign_X]) begin 
+            //     Red = 4'hf;   //Time sign
+            //     Green = 4'hf;
+            //     Blue = 4'hf;
+            // end  
 
             else if ((DrawX >=400 && DrawX < 496) && (DrawY >=186 && DrawY < 206) && next_block_pixels_ret[95-loc_in_sign_X]) begin 
                 Red = 4'hf;   //next block sign

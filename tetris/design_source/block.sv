@@ -57,7 +57,7 @@ module block
     logic moved;
     logic valid;
 
-    integer i, j;
+    // integer i, j;
     localparam GRID_HEIGHT = 20;
     localparam GRID_WIDTH  = 10;
     
@@ -94,13 +94,14 @@ module block
 
         // initial state
         if (start) begin
-            start_next = 0;
+            start_next = 0;grid[i][j] <= 7;
             new_block = 1;
         end
 
         // grid index: 0-6 = blocks, 7 = none, 8+ = stationary blocks
         // block dropping
         if (timer == move || drop_it) begin
+            drop_it_next = 0;
             if (dropping) begin
                 moved = 1;
                 y_next = y + 1;
@@ -139,7 +140,7 @@ module block
                 grid_temp = grid_next;
                 clear_row = 1;
                 for (int j = 0; j < GRID_WIDTH; j++) begin
-                    if (grid_temp[i][j] != 7) begin
+                    if (grid_temp[i][j] != 6) begin
                         clear_row = 0;
                     end
                 end
@@ -567,14 +568,15 @@ module block
     always_ff @(posedge frame_clk) //make sure the frame clock is instantiated correctly
     begin: Move_Block
         if (Reset) begin
-            for (i = 0; i < GRID_HEIGHT; i++) begin 
-                for (j = 0; j < GRID_WIDTH; j++) begin
+            for (int i = 0; i < GRID_HEIGHT; i++) begin 
+                for (int j = 0; j < GRID_WIDTH; j++) begin
                     grid[i][j] <= 7;
+                    grid_next[i][j] <= 7;
                 end
             end
 
             start <= 1;
-            move <= 30;
+            move <= 60;
             timer <= 0;
 
             drop_it <= 0;
